@@ -1,0 +1,130 @@
+\documentclass[3pt,landscape]{article}
+%ss[10pt,landscape]{article}
+\usepackage{multicol}
+\usepackage{calc}
+\usepackage{ifthen}
+\usepackage[landscape]{geometry}
+\usepackage{amsmath,amsthm,amsfonts,amssymb}
+\usepackage{color,graphicx,overpic}
+\usepackage{hyperref}
+
+
+\pdfinfo{
+/Title (final.pdf)
+/Creator (TeX)
+/Producer (pdfTeX 1.40.0)
+/Author (Rishi Sharma)
+/Subject (Machine Learning)
+/Keywords (pdflatex, latex,pdftex,tex)}
+
+% This sets page margins to .5 inch if using letter paper, and to 1cm
+% if using A4 paper. (This probably isn't strictly necessary.)
+% If using another size paper, use default 1cm margins.
+\ifthenelse{\lengthtest { \paperwidth = 11in}}
+    { \geometry{top=.3in,left=.3in,right=.3in,bottom=.3in} }
+    {\ifthenelse{ \lengthtest{ \paperwidth = 297mm}}
+        {\geometry{top=1cm,left=1cm,right=1cm,bottom=1cm} }
+        {\geometry{top=1cm,left=1cm,right=1cm,bottom=1cm} }
+    }
+
+% Turn off header and footer
+\pagestyle{empty}
+
+% Redefine section commands to use less space
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{0mm}%
+                            {-1ex plus -.5ex minus -.2ex}%
+                            {0.5ex plus .2ex}%x
+                            {\normalfont\large\bfseries}}
+\renewcommand{\subsection}{\@startsection{subsection}{2}{0mm}%
+                            {-1explus -.5ex minus -.2ex}%
+                            {0.5ex plus .2ex}%
+                            {\normalfont\normalsize\bfseries}}
+\renewcommand{\subsubsection}{\@startsection{subsubsection}{3}{0mm}%
+                            {-1ex plus -.5ex minus -.2ex}%
+                            {1ex plus .2ex}%
+                            {\normalfont\small\bfseries}}
+\makeatother
+
+% Define BibTeX command
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+% Don't print section numbers
+\setcounter{secnumdepth}{0}
+
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt plus 0.5ex}
+
+%My Environments
+\newtheorem{example}[section]{Example}
+% -----------------------------------------------------------------------
+
+\def\ci{\perp\!\!\!\perp}
+
+\begin{document}
+\raggedright
+\footnotesize
+\begin{multicols}{3}
+
+
+% multicol parameters
+% These lengths are set only within the two main columns
+%\setlength{\columnseprule}{0.25pt}
+\setlength{\premulticols}{1pt}
+\setlength{\postmulticols}{1pt}
+\setlength{\multicolsep}{1pt}
+\setlength{\columnsep}{2pt}
+
+\begin{center}
+    \Large{\underline{CS 189 Final Note Sheet}} \\
+\end{center}
+
+\subsection*{Probabilistic Motivation for Least Squares}
+\(y^{(i)} = \theta^\intercal x^{(i)} + \epsilon^{(i)} \  \ \ \text{with } \ \epsilon{(i)} \sim \mathcal{N}(0,\sigma^2)\)
+ \(\implies p(y^{(i)}|x^{(i)};\theta) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{(y^{(i)} - \theta^\intercal x^{(i)})^2}{2\sigma^2}\right)\)
+ \(\implies L(\theta) = \prod_{i=1}^{m} \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{(y^{(i)} - \theta^\intercal x^{(i)})^2}{2\sigma^2}\right)\)
+ \(\implies l(\theta) = m\log\frac{1}{\sqrt{2\pi\sigma^2}} - \frac{1}{2\sigma^2} \sum_{i=1}^m (y^{(i)} - \theta^\intercal x^{(i)})^2 \)
+ \(\implies \max_\theta l(\theta) \equiv \min_\theta \sum_{i=1}^m (y^{(i)} - \theta^\intercal x^{(i)})^2 \)\\
+ Gaussian noise in our data set $\{x^{(i)},y^{(i)}\}_{i=1}^m$gives us least squares \\
+\(min_\theta ||X\theta - y||_2^2 \equiv \min_\theta \theta^\intercal X^\intercal X \theta - 2 \theta^\intercal X^\intercal y + y^\intercal Y\)
+\(\nabla_\theta l(\theta) =  X^\intercal X\theta - X^\intercal y = 0 \implies \theta = (X^\intercal X)^{-1}X^\intercal y \)
+
+\subsection*{Least Squares Solution}
+\(\min_x ||Ax - y||_2^2 \implies x^* = A^\dagger y \text{\ min norm sol'n}\)\\
+Sol'n set: \(x_0 + N(A) = x^* + N(A)\)\[A^\dagger = \left\{\begin{array}{lr}
+            (A^\intercal A)^{-1}A^\intercal \text{ \ $A$ full column rank}\\
+           A^\intercal (AA^\intercal)^{-1} \text{ \ $A$ full row rank}\\
+            V\Sigma^\dagger U^\intercal \text{ \ \ \ \ \ \ \ any $A$} 
+    \end{array}\right. \]
+    
+\subsection*{Logistic Regresion}
+Classify $y \in \{0,1\} \implies$model $p(y=1|x) = h_\theta(x) = \frac{1}{1+e^{-\theta^T x}}$\\
+$\frac{dh_\theta}{d\theta} = (\frac{1}{1 + e^{\theta^Tx}})^2 e^{-\theta^Tx} = \frac{1}{1 + e^{\theta^Tx}}\left(1-\frac{1}{1+e^{-\theta^Tx}}\right) = h_\theta(1-h_\theta)$
+\(p(y|x;\theta) = (h_\theta(x))^y(1-h_\theta(x))^{1-y} \implies\)
+\(L(\theta)  = \prod_{i=1}^m (h_\theta(x^{(i)}))^{y^{(i)}}(1-h_\theta(x^{(i)}))^{1-y^{(i)}} \implies \)
+\(l(\theta) = \sum_{i=1}^m y^{(i)} \log(h_\theta(x^{(i)})) + (1-y^{(i)})\log(1-h_\theta(x^{(i)})) \implies\)
+\(\nabla_\theta l = \sum_i (y^{(i)} - h_\theta(x^{(i)}))x^{(i)} = X^\intercal (y-h_\theta(X))\)  (want $\max \ l(\theta)$) 
+Stoch: $\boxed{\theta_{t+1} = \theta_t + \alpha(y^{(j)}_t - h_\theta(x^{(j)}_t)x^{(j)}_t}$\\
+Batch: $\boxed{\theta_{t+1} = \theta_t + \alpha X^\intercal(y-h_\theta(X))}$
+
+
+
+
+
+
+
+
+
+
+
+
+
+% You can even have references
+\rule{0.3\linewidth}{0.25pt}
+\scriptsize
+\bibliographystyle{abstract}
+\bibliography{refFile}
+\end{multicols}
+\end{document}
