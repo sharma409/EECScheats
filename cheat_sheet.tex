@@ -89,8 +89,8 @@
  \(\implies \max_\theta l(\theta) \equiv \min_\theta \sum_{i=1}^m (y^{(i)} - \theta^\intercal x^{(i)})^2 \)\\
  Gaussian noise in our data set $\{x^{(i)},y^{(i)}\}_{i=1}^m$gives us least squares \\
 \(min_\theta ||X\theta - y||_2^2 \equiv \min_\theta \theta^\intercal X^\intercal X \theta - 2 \theta^\intercal X^\intercal y + y^\intercal Y\)
-\(\nabla_\theta l(\theta) =  X^\intercal X\theta - X^\intercal y = 0 \implies \theta = (X^\intercal X)^{-1}X^\intercal y \)
-
+\(\nabla_\theta l(\theta) =  X^\intercal X\theta - X^\intercal y = 0 \implies \theta = (X^\intercal X)^{-1}X^\intercal y \)\\
+Gradient Descent: $\theta_{t+1} = \theta_t + \alpha (y_t^{(i)} - \theta^\intercal x_t^{(i)})x_t^{(i)} $
 \subsection*{Least Squares Solution}
 \(\min_x ||Ax - y||_2^2 \implies x^* = A^\dagger y \text{\ min norm sol'n}\)\\
 Sol'n set: \(x_0 + N(A) = x^* + N(A)\)\[A^\dagger = \left\{\begin{array}{lr}
@@ -98,7 +98,6 @@ Sol'n set: \(x_0 + N(A) = x^* + N(A)\)\[A^\dagger = \left\{\begin{array}{lr}
            A^\intercal (AA^\intercal)^{-1} \text{ \ $A$ full row rank}\\
             V\Sigma^\dagger U^\intercal \text{ \ \ \ \ \ \ \ any $A$} 
     \end{array}\right. \]
-    
 \subsection*{Logistic Regresion}
 Classify $y \in \{0,1\} \implies$model $p(y=1|x) = h_\theta(x) = \frac{1}{1+e^{-\theta^T x}}$\\
 $\frac{dh_\theta}{d\theta} = (\frac{1}{1 + e^{\theta^Tx}})^2 e^{-\theta^Tx} = \frac{1}{1 + e^{\theta^Tx}}\left(1-\frac{1}{1+e^{-\theta^Tx}}\right) = h_\theta(1-h_\theta)$
