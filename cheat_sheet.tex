@@ -81,16 +81,50 @@
     \Large{\underline{CS 189 Final Note Sheet}} \\
 \end{center}
 
+%Maximum likelihood estimation
+%CHECK - Decision theory
+%CHECK - Multivariate Gaussians
+%CHECK - Linear/quadratic discriminant analysis
+%CHECK - Linear regression
+%CHECK - Logistic regression
+%CHECK - Loss Functions (hinge loss, log loss, misclassification loss)
+%CHECK - Optimization (Gradient descent, Newton's Method, Lagrange multipliers)
+%CHECK - SVMs (primal, dual)
+%Kernels
+%CHECK - Nearest neighbour
+
+\subsection*{Baysien Decision Theory}
+Bayes Rule: \(P(\omega|x)=\frac{P(x|\omega)P(\omega)}{P(x)}, P(x)=\sum_{i}P(x|\omega_i)P(\omega_i)\)
+\(P(error)=\int_{-\infty}^\infty P(error|x)P(x)dx\)
+\(P(error|x)=
+    \left\{
+    \begin{array}{lr}
+        P(\omega_1|x) \text{\ if we decide\ } \omega_2\\
+        P(\omega_2|x) \text{\ if we decide\ } \omega_1
+    \end{array}
+    \right.\)\\
+\(\text{0-1 Loss:\ } \lambda(\alpha_i|\omega_j)=
+    \left\{
+    \begin{array}{lr}
+        0 \ \ i=j \text{\ (correct)\ }\\
+        1 \ \ i\not=j\text{\ (mismatch)\ }
+    \end{array}
+    \right.\)\\
+\(\text{Expected Loss (Risk):\ } R(\alpha_i|x)=\sum_{j=1}^c\lambda(\alpha_i|\omega_j)P(\omega_j|x)\)\\
+\(\text{0-1 Risk:\ } R(\alpha_i|x)=\sum_{j\not=i}^cP(\omega_j|x)=1-P(\omega_i|x)\)\\
+%Add decision boundary?, optimal class? Guassian same Variance intuition...
+
 \subsection*{Probabilistic Motivation for Least Squares}
-\(y^{(i)} = \theta^\intercal x^{(i)} + \epsilon^{(i)} \  \ \ \text{with } \ \epsilon{(i)} \sim \mathcal{N}(0,\sigma^2)\)
- \(\implies p(y^{(i)}|x^{(i)};\theta) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{(y^{(i)} - \theta^\intercal x^{(i)})^2}{2\sigma^2}\right)\)
- \(\implies L(\theta) = \prod_{i=1}^{m} \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{(y^{(i)} - \theta^\intercal x^{(i)})^2}{2\sigma^2}\right)\)
- \(\implies l(\theta) = m\log\frac{1}{\sqrt{2\pi\sigma^2}} - \frac{1}{2\sigma^2} \sum_{i=1}^m (y^{(i)} - \theta^\intercal x^{(i)})^2 \)
- \(\implies \max_\theta l(\theta) \equiv \min_\theta \sum_{i=1}^m (y^{(i)} - \theta^\intercal x^{(i)})^2 \)\\
+\(y^{(i)} = \theta^\intercal x^{(i)} + \epsilon^{(i)}\ \text{with noise} \ \epsilon{(i)} \sim \mathcal{N}(0,\sigma^2)\)\\
+Note: The intercept term $x_0=1$ is accounted for in $\theta$
+\(\implies p(y^{(i)}|x^{(i)};\theta) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{(y^{(i)} - \theta^\intercal x^{(i)})^2}{2\sigma^2}\right)\)
+\(\implies L(\theta) = \prod_{i=1}^{m} \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{(y^{(i)} - \theta^\intercal x^{(i)})^2}{2\sigma^2}\right)\)
+\(\implies l(\theta) = m\log\frac{1}{\sqrt{2\pi\sigma^2}} - \frac{1}{2\sigma^2} \sum_{i=1}^m (y^{(i)} - \theta^\intercal x^{(i)})^2 \)
+\(\implies \max_\theta l(\theta) \equiv \min_\theta \sum_{i=1}^m (y^{(i)} - h_\theta(x))^2 \)\\
  Gaussian noise in our data set $\{x^{(i)},y^{(i)}\}_{i=1}^m$gives us least squares \\
 \(min_\theta ||X\theta - y||_2^2 \equiv \min_\theta \theta^\intercal X^\intercal X \theta - 2 \theta^\intercal X^\intercal y + y^\intercal Y\)
-\(\nabla_\theta l(\theta) =  X^\intercal X\theta - X^\intercal y = 0 \implies \theta = (X^\intercal X)^{-1}X^\intercal y \)\\
-Gradient Descent: $\theta_{t+1} = \theta_t + \alpha (y_t^{(i)} - \theta^\intercal x_t^{(i)})x_t^{(i)} $
+\(\nabla_\theta l(\theta) =  X^\intercal X\theta - X^\intercal y = 0 \implies \boxed{\theta^* = (X^\intercal X)^{-1}X^\intercal y} \)\\
+Gradient Descent: $\theta_{t+1} = \theta_t + \alpha (y_t^{(i)} - h(x_t^{(i)}))x_t^{(i)},\ \ h_\theta(x)=\theta^\intercal x$
 \subsection*{Least Squares Solution}
 \(\min_x ||Ax - y||_2^2 \implies x^* = A^\dagger y \text{\ min norm sol'n}\)\\
 Sol'n set: \(x_0 + N(A) = x^* + N(A)\)\[A^\dagger = \left\{\begin{array}{lr}
@@ -98,21 +132,81 @@ Sol'n set: \(x_0 + N(A) = x^* + N(A)\)\[A^\dagger = \left\{\begin{array}{lr}
            A^\intercal (AA^\intercal)^{-1} \text{ \ $A$ full row rank}\\
             V\Sigma^\dagger U^\intercal \text{ \ \ \ \ \ \ \ any $A$} 
     \end{array}\right. \]
+%Variants to least squares?
+
 \subsection*{Logistic Regresion}
-Classify $y \in \{0,1\} \implies$model $p(y=1|x) = h_\theta(x) = \frac{1}{1+e^{-\theta^T x}}$\\
+Classify $y \in \{0,1\} \implies$Model $p(y=1|x) = \frac{1}{1+e^{-\theta^T x}}= h_\theta(x)$\\
 $\frac{dh_\theta}{d\theta} = (\frac{1}{1 + e^{\theta^Tx}})^2 e^{-\theta^Tx} = \frac{1}{1 + e^{\theta^Tx}}\left(1-\frac{1}{1+e^{-\theta^Tx}}\right) = h_\theta(1-h_\theta)$
 \(p(y|x;\theta) = (h_\theta(x))^y(1-h_\theta(x))^{1-y} \implies\)
 \(L(\theta)  = \prod_{i=1}^m (h_\theta(x^{(i)}))^{y^{(i)}}(1-h_\theta(x^{(i)}))^{1-y^{(i)}} \implies \)
 \(l(\theta) = \sum_{i=1}^m y^{(i)} \log(h_\theta(x^{(i)})) + (1-y^{(i)})\log(1-h_\theta(x^{(i)})) \implies\)
-\(\nabla_\theta l = \sum_i (y^{(i)} - h_\theta(x^{(i)}))x^{(i)} = X^\intercal (y-h_\theta(X))\)  (want $\max \ l(\theta)$) 
+\(\nabla_\theta l = \sum_i (y^{(i)} - h_\theta(x^{(i)}))x^{(i)} = X^\intercal (y-h_\theta(X))\),  (want $\max \ l(\theta)$)
 Stoch: $\boxed{\theta_{t+1} = \theta_t + \alpha(y^{(j)}_t - h_\theta(x^{(j)}_t)x^{(j)}_t}$\\
 Batch: $\boxed{\theta_{t+1} = \theta_t + \alpha X^\intercal(y-h_\theta(X))}$
+%Gaussians with equal variance go to logistic, so do poisson and other 
+%MLE of variance for guassian is biased (mean is unbiased)
 
+\subsection*{Multivariate Gaussian}
+\(p(x;\mu,\Sigma)=\frac{1}{(2\pi)^{n/2}|\Sigma|^{1/2}}exp\left(-\frac{1}{2}(x-\mu)^T \Sigma^{-1}(x-\mu)\right)\)
+\(\Sigma=E[(X-\mu)(X-\mu)^T]=E[XX^T]-\mu\mu^T\)
+\(\Sigma \text{ is PSD} \implies x^T\Sigma x \ge 0 \text{, if inverse exists }\Sigma \text{ must be PD}\)
+%Axis lengths
+\(\text{If } X\sim N(\mu,\Sigma),\ \text{then}\ AX+b\sim N(A\mu+b,A\Sigma A^T)\)\\
+\(\implies \Sigma^{-\frac{1}{2}}(X-\mu)\sim N(0,I), \text{ where } \Sigma^{-\frac{1}{2}}=U\Lambda^{-\frac{1}{2}}\)
+%Rotation,Scaling, Shift example
+%EVD
 
+\subsection*{LDA and QDA}
+Classify $y\in\{0,1\},$ Model $p(y)=\phi^y\phi^{1-y}$ and $p(x|y=1;\mu_1)=\frac{1}{(2\pi)^{n/2}|\Sigma|^{1/2}}exp\left(-\frac{1}{2}(x-\mu_1)^T \Sigma^{-1}(x-\mu_1)\right)$\\
+$l(\theta,\mu_0,\mu_1,\Sigma)=log\ \Pi_{i=1}^m p(x^{(i)}|y^{(i)};\mu_0,\mu_1,\Sigma)p(y^{(i)};\Phi)$
+gives us $\phi_{MLE}=\frac{1}{m}\sum_{i=1}^m 1\{y^{(i)}=1\}, \mu_{k_{MLE}}=$avg of $x^{(i)}$ classified as k,
+$\Sigma_{MLE} =\frac{1}{m}\sum_{i=1}^m(x^{(i)}-\mu_{y_{(i)}})(x^{(i)}-\mu_{y_{(i)}})^T$. Notice the covariance matrix is the same for all classes in LDA.\\
+$p(x|y)$ multivariate gaussian (w/ shared $\Sigma) \implies p(y|x)$ is logisitic function. The converse is NOT true. LDA makes stronger assumptions about data than does logistric regression.
+$h(x)=arg\max_{k}-\frac{1}{2}(x-\mu_k)^T \Sigma^{-1}(x-\mu_k)+log(\pi_k)$ \\where $\pi_k=p(y=k)$\\
+\rule{1\linewidth}{0.1pt}\\
+For QDA, the model is the same as LDA except that each class has a unique covariance matrix. 
+$h(x)=arg\max_{k}-\frac{1}{2}log|\Sigma_k|-\frac{1}{2}(x-\mu_k)^T \Sigma_k^{-1}(x-\mu_k)+log(\pi_k)$
 
+\subsection*{Optimization}
+Newtons Method: $\theta_{t+1}=\theta_t-[\nabla_\theta^2f(\theta_t)]^{-1}\nabla_\theta f(\theta_t)$\\
+Gradient Decent: $\theta_{t+1}=\theta_t-\alpha\nabla_\theta f(\theta_t)$, for minimizing\\
+Lagrange Multipliers:\\
+Given,\ \ $\min_x f(x)\ s.t.\ g_i(x)=0,\ h_i(x)\le0$\ \ the corresponding Lagrangian is: $L(x,\alpha)=f(x)+\sum_{i=1}^k\alpha_ig_i(x)+\sum_{i=1}^l\beta_ih_i(x)$\\
+We min over x and max over the Lagrange multipliers $\alpha$ and $\beta$
 
+\subsection*{Support Vector Machines}
+In the strictly separable case, the goal is to find a seperating hyperplane (like logistic regression) except now we don't just want any hyperplane, but one with the largest margin. \\
+$H=\{\omega^Tx+b=0\}$, since scaling $\omega$ and b in opposite directions doesn't change the hyperplane our optimization function should have scaling invariance built into it. Thus, we do it now and define the closest points to the hyperplane $x_{sv}$ (support vectors) to satisfy: $|\omega^Tx_{sv}+b|=1$. The distance from any support vector to the hyper plane is now: $\frac{1}{||\omega||_2}$. Maximizing the distance to the hyperplane is the same as minimizing $||\omega||_2$.\\
+The final optimization problem is: $\boxed{\min_{\omega,b} \frac{1}{2}||\omega||_2\ s.t.\ y^{(i)}(w^Tx^{(i)}+b)\ge1, i=1,\dots,m}$\\
+Primal: $L_p(\omega,b,\alpha)=\frac{1}{2}||\omega||_2-\sum_{i=1}^m\alpha_i(y^{(i)}(w^Tx^{(i)}+b)-1)$\\
+$\frac{\partial L_p}{\partial\omega}=\omega-\sum \alpha_iy^{(i)}x^{(i)}=0 \implies \omega=\sum \alpha_iy^{(i)}x^{(i)}$\\
+$\frac{\partial L_p}{\partial b}=-\sum \alpha_iy^{(i)}=0, \text{\ \ \ Note: }\alpha_i\ne 0$ only for support vectors.\\
+Substitute the derivatives into the primal to get the dual.\\
+Dual: $L_d(\alpha)=\sum_{i=1}^m\alpha_i-\frac{1}{2}\sum_{i=1}^m\sum_{j=1}^my^{(i)}y^{(j)}\alpha_i\alpha_j(x^{(i)})^Tx^{(j)}$
+\rule{1\linewidth}{0.1pt}\\
+In the non-separable case we allow points to cross the marginal boundary by some amount $\xi$ and penalize it.\\
+$\boxed{\min_{\omega,b} \frac{1}{2}||\omega||_2+C\sum_{i=1}^m\xi_i\ \ s.t.\ \ y^{(i)}(w^Tx^{(i)}+b)\ge1-\xi_i}$\\
+The dual for non-separable doesn't change much except that each $\alpha_i$ now has an upper bound of C $\implies 0\le\alpha_i\le C$
+%Kernel stuff?
 
+\subsection*{Loss Functions}
+In general the loss function consists of two parts, the loss term and the regularization term. $J(\omega)=\sum_i Loss_i + \lambda R(\omega)$
 
+%Loss Functions (hinge loss, log loss, misclassification loss)
+
+\subsection*{Nearest Neighbor}
+Key Idea: Store all training examples $<x_i,f(x_i)>$\\
+NN: Find closest training point using some distance metric and take its label.\\
+k-NN: Find closest k training points and take on the most likely label based on some voting scheme (mean, median,...)\\
+Behavior at the limit: 1NN $lim_{N\to\infty}\ \epsilon^*\le\epsilon_{NN}\le 2\epsilon^*$
+$\epsilon^*=\text{error of optimal prediction},\ \epsilon_{nn}=\text{error of 1NN classifier}$\\
+KNN \ $lim_{N\to\infty,K\to\infty}, \frac{K}{N}\to 0, \epsilon_{knn}=\epsilon^*$\\
+Curse of dimentionality: As the number of dimensions increases, everything becomes farther appart. Our low dimension intuition falls apart. Consider the Hypersphere/Hypercube ratio, it's close to zero at d=10.
+Solutions: 1) Get more data to fill all of that empty space. 2) Get better features, reducing the dimentionality and packing the data closer together. Ex: Bag-of-words, Histograms,... 3) Use a better distance metric.\\
+Minkowski: $Dis_p(x,y)=(\sum_{i=1}^d|x_i-y_u|^p)^{\frac{1}{p}}=||x-y||_p$\\
+0-norm: $Dis_0(x,y)=\sum_{i=1}^d I|x_i=y_i|$\\
+Mahalanobis: $Dis_M(x,y|\Sigma)=\sqrt{(x-y)^T\Sigma^{-1}(x-y)}$\\
+In high-d we get "Hubs" s.t most points identify the hubs as their NN. These hubs are usually near the means (Ex: dull gray images, sky and clouds). To avoid having everything classified as these hubs, we can use cosine similarity.
 
 
 
