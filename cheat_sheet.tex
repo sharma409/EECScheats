@@ -152,7 +152,6 @@ Batch: $\boxed{\theta_{t+1} = \theta_t + \alpha X^\intercal(y-h_\theta(X))}$
 \(f(x;\mu,\Sigma)=\frac{1}{(2\pi)^{n/2}|\Sigma|^{1/2}}exp\left(-\frac{1}{2}(x-\mu)^T \Sigma^{-1}(x-\mu)\right)\)
 \(\Sigma=E[(X-\mu)(X-\mu)^T]=E[XX^T]-\mu\mu^T\)
 \(\Sigma \text{ is PSD} \implies x^T\Sigma x \ge 0 \text{, if inverse exists }\Sigma \text{ must be PD}\)
-%Axis lengths
 \(\text{If } X\sim N(\mu,\Sigma),\ \text{then}\ AX+b\sim N(A\mu+b,A\Sigma A^T)\)\\
 \(\implies \Sigma^{-\frac{1}{2}}(X-\mu)\sim N(0,I), \text{ where } \Sigma^{-\frac{1}{2}}=U\Lambda^{-\frac{1}{2}}\)\\
 \rule{1\linewidth}{0.1pt}\\
@@ -214,6 +213,16 @@ Minkowski: $Dis_p(x,y)=(\sum_{i=1}^d|x_i-y_u|^p)^{\frac{1}{p}}=||x-y||_p$\\
 0-norm: $Dis_0(x,y)=\sum_{i=1}^d I|x_i=y_i|$\\
 Mahalanobis: $Dis_M(x,y|\Sigma)=\sqrt{(x-y)^T\Sigma^{-1}(x-y)}$\\
 In high-d we get "Hubs" s.t most points identify the hubs as their NN. These hubs are usually near the means (Ex: dull gray images, sky and clouds). To avoid having everything classified as these hubs, we can use cosine similarity.
+\subsection*{Gradients}
+\(\frac{\partial \bf{y}}{\partial \bf{x}}\triangleq
+    \begin{bmatrix}
+    \frac{\partial y_1}{\partial x_1} & \dots & \frac{\partial y_m}{\partial x_1} \\
+    \vdots & \ddots & \vdots\\
+    \frac{\partial y_1}{\partial x_n} & \dots & \frac{\partial y_m}{\partial x_n}
+    \end{bmatrix},
+\)
+\(\frac{\partial (Ax)}{\partial x}=A, \frac{\partial (x^TA)}{\partial x}=A^T,\)\\
+\( \frac{\partial (x^Tx)}{\partial x}=2x, \frac{\partial (x^TAx)}{\partial x}=(A+A^T)x, \frac{\partial (trBA)}{\partial x}=B^T\)
 
 
 
