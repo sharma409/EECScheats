@@ -132,7 +132,9 @@ Sol'n set: \(x_0 + N(A) = x^* + N(A)\)\[A^\dagger = \left\{\begin{array}{lr}
            A^\intercal (AA^\intercal)^{-1} \text{ \ $A$ full row rank}\\
             V\Sigma^\dagger U^\intercal \text{ \ \ \ \ \ \ \ any $A$} 
     \end{array}\right. \]
-%Variants to least squares?
+L2 Reg: $\min_x ||Ax-y||_2^2 + \lambda||x||_2^2 \implies x^*=(A^TA+\lambda I)^{-1}X^Ty$\\
+The above variant is used when A contains a null space. L2 Reg falls out of the MLE when we add a Gaussian prior on x with $\Sigma=cI$. We get L1 Reg when x has a Laplace prior.
+%1l-sparcity, regularization prevents overfitting.
 
 \subsection*{Logistic Regresion}
 Classify $y \in \{0,1\} \implies$Model $p(y=1|x) = \frac{1}{1+e^{-\theta^T x}}= h_\theta(x)$\\
@@ -166,7 +168,7 @@ Classify $y\in\{0,1\},$ Model $p(y)=\phi^y\phi^{1-y}$ and $p(x|y=1;\mu_1)=\frac{
 $l(\theta,\mu_0,\mu_1,\Sigma)=log\ \Pi_{i=1}^m p(x^{(i)}|y^{(i)};\mu_0,\mu_1,\Sigma)p(y^{(i)};\Phi)$
 gives us $\phi_{MLE}=\frac{1}{m}\sum_{i=1}^m 1\{y^{(i)}=1\}, \mu_{k_{MLE}}=$avg of $x^{(i)}$ classified as k,
 $\Sigma_{MLE} =\frac{1}{m}\sum_{i=1}^m(x^{(i)}-\mu_{y_{(i)}})(x^{(i)}-\mu_{y_{(i)}})^T$. Notice the covariance matrix is the same for all classes in LDA.\\
-$p(x|y)$ multivariate gaussian (w/ shared $\Sigma) \implies p(y|x)$ is logisitic function. The converse is NOT true. LDA makes stronger assumptions about data than does logistric regression.
+If $p(x|y)$ multivariate gaussian (w/ shared $\Sigma)$, then $p(y|x)$ is logisitic function. The converse is NOT true. LDA makes stronger assumptions about data than does logistric regression.
 $h(x)=arg\max_{k}-\frac{1}{2}(x-\mu_k)^T \Sigma^{-1}(x-\mu_k)+log(\pi_k)$ \\where $\pi_k=p(y=k)$\\
 \rule{1\linewidth}{0.1pt}\\
 For QDA, the model is the same as LDA except that each class has a unique covariance matrix. 
