@@ -93,7 +93,7 @@
 %Kernels
 %CHECK - Nearest neighbour
 
-\subsection*{Baysien Decision Theory}
+\subsection*{Bayesian Decision Theory}
 Bayes Rule: \(P(\omega|x)=\frac{P(x|\omega)P(\omega)}{P(x)}, P(x)=\sum_{i}P(x|\omega_i)P(\omega_i)\)
 \(P(error)=\int_{-\infty}^\infty P(error|x)P(x)dx\)
 \(P(error|x)=
@@ -224,10 +224,24 @@ In high-d we get "Hubs" s.t most points identify the hubs as their NN. These hub
 \(\frac{\partial (Ax)}{\partial x}=A, \frac{\partial (x^TA)}{\partial x}=A^T,\)\\
 \( \frac{\partial (x^Tx)}{\partial x}=2x, \frac{\partial (x^TAx)}{\partial x}=(A+A^T)x, \frac{\partial (trBA)}{\partial x}=B^T\)
 
+\newpage
+\subsection{Decision Trees}
+Given a set of points and classes $\{x_i,y_i\}_{i=1}^n$, test features $x_j$ and branch on the feature which ``best'' separates the data. In new space (space without features $x_j$) repeat the process and continue splitting data until good classification accuracy is reached.
+Heurisitics:
+\begin{enumerate}
+
+\item Maximize Information Gain: \(\max_j \ \operatorname{infogain}(D|X_j)\) \[ \max_j \ \ \operatorname{H}(D) \ - \sum_{x_j \in X_j} P(X_j = x_j) \cdot \operatorname{H}(D | X_j = x_j) \]
+where $\operatorname{H}(D) = -\sum_{c \in C} P(y = c) \log(p(y = c)) $ is the entropy of the data set, $C$ is the set of classes each data point can take, and $P(y=c)$ is the fraction of data points with class $c$.
+
+\item Minimize Gini Impurity
+
+\item Minimize Misclassification Impurity
+
+\end{enumerate}
 
 
 
-
+\newpage
 
 
 % You can even have references
