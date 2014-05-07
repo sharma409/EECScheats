@@ -227,7 +227,7 @@ In high-d we get "Hubs" s.t most points identify the hubs as their NN. These hub
 \newpage
 \subsection{Decision Trees}
 Given a set of points and classes $\{x_i,y_i\}_{i=1}^n$, test features $x_j$ and branch on the feature which ``best'' separates the data. In new space (space without features $x_j$) repeat the process and continue splitting data until good classification accuracy is reached.
-Heurisitics:
+{\bf Heurisitics}:
 \begin{enumerate}
 
 \item Maximize Information Gain: \(\max_j \ \operatorname{infogain}(D|X_j)\) \[ \max_j \ \ \operatorname{H}(D) \ - \sum_{x_j \in X_j} P(X_j = x_j) \cdot \operatorname{H}(D | X_j = x_j) \]
@@ -239,7 +239,11 @@ where $\operatorname{H}(D) = -\sum_{c \in C} P(y = c) \log(p(y = c)) $ is the en
 
 \end{enumerate}
 
+{\bf Optimal Split}:
 
+\subsection{Random Forests}
+{\bf Problem}: Decision trees are \underline{unstable}: small changes in the input data have large effect on tree structure $\implies$ decision trees are high-variance estimators.\\
+{\bf Solution}: Random Forests train $M$ different trees with randomly sampled subsets of the data (and sometimes with randomly sampled subsets of the features to decorrelate the trees). A new point is tested on all $M$ trees and we take the majority as our output class (for regression we take the average of the output).
 
 \newpage
 
