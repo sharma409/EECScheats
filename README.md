@@ -1,4 +1,6 @@
-EECScheatsheets
+EECSsheets
 ===============
+CS 189 - Machine Learning
 
-EECS Cheat Sheets
+
+More cheat sheets to come, I presume
