@@ -95,6 +95,7 @@
 
 \subsection*{Bayesian Decision Theory}
 Bayes Rule: \(P(\omega|x)=\frac{P(x|\omega)P(\omega)}{P(x)}, P(x)=\sum_{i}P(x|\omega_i)P(\omega_i)\)
+\(P(x,w) = P(x|w)P(w) = P(w|x)P(x)\)
 \(P(error)=\int_{-\infty}^\infty P(error|x)P(x)dx\)
 \(P(error|x)=
     \left\{
@@ -202,17 +203,24 @@ In general the loss function consists of two parts, the loss term and the regula
 
 \subsection*{Nearest Neighbor}
 Key Idea: Store all training examples $<x_i,f(x_i)>$\\
-NN: Find closest training point using some distance metric and take its label.\\
-k-NN: Find closest k training points and take on the most likely label based on some voting scheme (mean, median,...)\\
-Behavior at the limit: 1NN $lim_{N\to\infty}\ \epsilon^*\le\epsilon_{NN}\le 2\epsilon^*$
+{\bf NN}: Find closest training point using some distance metric and take its label.\\
+{\bf k-NN}: Find closest k training points and take on the most likely label based on some voting scheme (mean, median,...)\\
+{\bf Behavior at the limit}: 1NN $lim_{N\to\infty}\ \epsilon^*\le\epsilon_{NN}\le 2\epsilon^*$
 $\epsilon^*=\text{error of optimal prediction},\ \epsilon_{nn}=\text{error of 1NN classifier}$\\
 KNN \ $lim_{N\to\infty,K\to\infty}, \frac{K}{N}\to 0, \epsilon_{knn}=\epsilon^*$\\
-Curse of dimentionality: As the number of dimensions increases, everything becomes farther appart. Our low dimension intuition falls apart. Consider the Hypersphere/Hypercube ratio, it's close to zero at d=10.
-Solutions: 1) Get more data to fill all of that empty space. 2) Get better features, reducing the dimentionality and packing the data closer together. Ex: Bag-of-words, Histograms,... 3) Use a better distance metric.\\
+{\bf Curse of dimentionality}: As the number of dimensions increases, everything becomes farther appart. Our low dimension intuition falls apart. Consider the Hypersphere/Hypercube ratio, it's close to zero at d=10.
+Solutions: 
+\begin{enumerate}
+\item Get more data to fill all of that empty space
+\item Get better features, reducing the dimentionality and packing the data closer together. Ex: Bag-of-words, Histograms,...
+\item Use a better distance metric.
+\end{enumerate}
 Minkowski: $Dis_p(x,y)=(\sum_{i=1}^d|x_i-y_u|^p)^{\frac{1}{p}}=||x-y||_p$\\
 0-norm: $Dis_0(x,y)=\sum_{i=1}^d I|x_i=y_i|$\\
 Mahalanobis: $Dis_M(x,y|\Sigma)=\sqrt{(x-y)^T\Sigma^{-1}(x-y)}$\\
-In high-d we get "Hubs" s.t most points identify the hubs as their NN. These hubs are usually near the means (Ex: dull gray images, sky and clouds). To avoid having everything classified as these hubs, we can use cosine similarity.
+In high-d we get "Hubs" s.t most points identify the hubs as their NN. These hubs are usually near the means (Ex: dull gray images, sky and clouds). To avoid having everything classified as these hubs, we can use cosine similarity.\\
+{\bf K-d trees} increase the efficiency of nearest neighbor lookup.
+
 \subsection*{Gradients}
 \(\frac{\partial \bf{y}}{\partial \bf{x}}\triangleq
     \begin{bmatrix}
@@ -221,10 +229,13 @@ In high-d we get "Hubs" s.t most points identify the hubs as their NN. These hub
     \frac{\partial y_1}{\partial x_n} & \dots & \frac{\partial y_m}{\partial x_n}
     \end{bmatrix},
 \)
-\(\frac{\partial (Ax)}{\partial x}=A, \frac{\partial (x^TA)}{\partial x}=A^T,\)\\
-\( \frac{\partial (x^Tx)}{\partial x}=2x, \frac{\partial (x^TAx)}{\partial x}=(A+A^T)x, \frac{\partial (trBA)}{\partial x}=B^T\)
+\(\frac{\partial (A{\bf x})}{\partial {\bf x}}=A^T, \frac{\partial ({\bf x}^TA)}{\partial {\bf x}}=A,\)\\
+\( \frac{\partial ({\bf x}^T{\bf x})}{\partial {\bf x}}=2{\bf x}, \frac{\partial ({\bf x}^TA{\bf x})}{\partial {\bf x}}=(A+A^T){\bf x}, \frac{\partial (trBA)}{\partial A}=B^T\)
 
-\newpage
+\subsection*{Generative vs. Discriminative Model}
+{\bf Generative}: Model class conditional density $p(x|y)$ and find $p(y|x) \propto p(x|y)p(y)$ or model joint density $p(x,y)$ and marginalize to find $p(y=k|x) = \int_x p(x,y=k)dx$ \\
+{\bf Discriminative}: Model conditional $p(y|x)$.
+
 \subsection{Decision Trees}
 Given a set of points and classes $\{x_i,y_i\}_{i=1}^n$, test features $x_j$ and branch on the feature which ``best'' separates the data. In new space (space without features $x_j$) repeat the process and continue splitting data until good classification accuracy is reached.
 {\bf Heurisitics}:
@@ -253,8 +264,14 @@ Calculate the center (mean) of each of the k centroids.
 Re-assign objects to closest centroids.
 Stop when no re-assignments occur.
 
-
 \subsection{Neural Networks}
+Neural Nets explore what you can do by combining perceptrons, each of which is a simple linear classifier. We use a soft threshold for each activation function $\theta$ because it is twice differentiable.
+\includegraphics[scale=0.4]{NN.pdf}
+{\bf Activation Functions:}
+\[\theta(s) = \operatorname{tanh}(s) = \frac{e^s-e^{-s}}{e^s+e^{-s}} \implies \theta'(s) = 1 - \theta^2(s)\]
+\[\theta(s) = \sigma(s) \implies \theta'(s) = \sigma(s)(1-\sigma(s))\]
+{\bf Notation:}
+$w_{ij}^{(l)}$ is the weight from neuron $i$ in layer $l-1$ to neuron $j$ in layer $l$.
 
 \textbf{Back-propagation:} We want to compute gradient descent on a neural network in an efficient manner.
 Start with the highest node and calculate:
@@ -265,7 +282,6 @@ $ \delta^{(l-1)}_i = \frac{\partial e(w)}{\partial s_i^{(l-1)}}
 = \sum_j \delta^{(l)}_j \cdot w_{ij}^{(l)} \cdot \theta'(s_i^{(l-1)})
 $.
 Then this allows us to compute the gradient quickly over the entire network.
-
 \newpage
 
 
