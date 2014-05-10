@@ -245,6 +245,27 @@ where $\operatorname{H}(D) = -\sum_{c \in C} P(y = c) \log(p(y = c)) $ is the en
 {\bf Problem}: Decision trees are \underline{unstable}: small changes in the input data have large effect on tree structure $\implies$ decision trees are high-variance estimators.\\
 {\bf Solution}: Random Forests train $M$ different trees with randomly sampled subsets of the data (and sometimes with randomly sampled subsets of the features to decorrelate the trees). A new point is tested on all $M$ trees and we take the majority as our output class (for regression we take the average of the output).
 
+\subsection{K means}
+
+Partition your data into a predetermined number of groups k.
+Randomly pick points to initialize the centers of the k clusters.
+Calculate the center (mean) of each of the k centroids.
+Re-assign objects to closest centroids.
+Stop when no re-assignments occur.
+
+
+\subsection{Neural Networks}
+
+\textbf{Back-propagation:} We want to compute gradient descent on a neural network in an efficient manner.
+Start with the highest node and calculate:
+$ \delta^L_1 = \frac{\partial e(w)}{\partial s_i^L}
+$
+Then we recursively calculate down:
+$ \delta^{(l-1)}_i = \frac{\partial e(w)}{\partial s_i^{(l-1)}}
+= \sum_j \delta^{(l)}_j \cdot w_{ij}^{(l)} \cdot \theta'(s_i^{(l-1)})
+$.
+Then this allows us to compute the gradient quickly over the entire network.
+
 \newpage
 
 
