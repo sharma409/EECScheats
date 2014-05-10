@@ -5,7 +5,7 @@
 \usepackage{ifthen}
 \usepackage[landscape]{geometry}
 \usepackage{amsmath,amsthm,amsfonts,amssymb}
-\usepackage{color,graphicx,overpic}
+\usepackage{color,graphicx, tikz}
 \usepackage{hyperref}
 
 
@@ -245,6 +245,18 @@ where $\operatorname{H}(D) = -\sum_{c \in C} P(y = c) \log(p(y = c)) $ is the en
 {\bf Problem}: Decision trees are \underline{unstable}: small changes in the input data have large effect on tree structure $\implies$ decision trees are high-variance estimators.\\
 {\bf Solution}: Random Forests train $M$ different trees with randomly sampled subsets of the data (and sometimes with randomly sampled subsets of the features to decorrelate the trees). A new point is tested on all $M$ trees and we take the majority as our output class (for regression we take the average of the output).
 
+\subsection{Neural Networks}
+Create a multi-layered graph and learn weights to correctly classify the inputs based on some error function. Middle layers are called hidden layers.
+Node value calculation (level l, node j, $d^{(l)}$ is size of layer l):
+\[ x_j ^{(l)} = g(\sum_{i=0}^{d^{(l-1)}} w_{ij}^{(l)} x_i^{(l-1)}) = g(s_j^{(l)}) \]
+
+Define a loss function, like cross-entropy or sum of squared error. Then use stochastic gradient descent to minimize loss.
+\\{\bf Backpropogation}: to calculate $\nabla L$. Define e to be error function (like sum of squared error). Then $\delta_j^{(l)} = \frac{\delta e(w)}{\delta s_j^{(l)}}$.
+\\At output layer, we know e(w) and can calculate $\delta$. For each other layer, we recursively calculate $\delta$:
+\[\delta_i^{(l-1)} =  g'(s_i^{(l-1)}) \sum_j \delta_j^{(l)} w_{ij}^{(l)}\]
+Then the derivative of error w.r.t. any of the weights is 
+\[\frac{\delta e(w)}{\delta w_{ij}^{(l)}} = \delta_j ^{(l)} x_i^{(l-1)}\].
+giving us the gradient we wanted.
 \newpage
 
 
