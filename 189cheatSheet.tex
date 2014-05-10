@@ -229,14 +229,13 @@ In high-d we get "Hubs" s.t most points identify the hubs as their NN. These hub
     \frac{\partial y_1}{\partial x_n} & \dots & \frac{\partial y_m}{\partial x_n}
     \end{bmatrix},
 \)
-\(\frac{\partial (Ax)}{\partial x}=A, \frac{\partial (x^TA)}{\partial x}=A^T,\)\\
-\( \frac{\partial (x^Tx)}{\partial x}=2x, \frac{\partial (x^TAx)}{\partial x}=(A+A^T)x, \frac{\partial (trBA)}{\partial x}=B^T\)
+\(\frac{\partial (A{\bf x})}{\partial {\bf x}}=A^T, \frac{\partial ({\bf x}^TA)}{\partial {\bf x}}=A,\)\\
+\( \frac{\partial ({\bf x}^T{\bf x})}{\partial {\bf x}}=2{\bf x}, \frac{\partial ({\bf x}^TA{\bf x})}{\partial {\bf x}}=(A+A^T){\bf x}, \frac{\partial (trBA)}{\partial A}=B^T\)
 
 \subsection*{Generative vs. Discriminative Model}
 {\bf Generative}: Model class conditional density $p(x|y)$ and find $p(y|x) \propto p(x|y)p(y)$ or model joint density $p(x,y)$ and marginalize to find $p(y=k|x) = \int_x p(x,y=k)dx$ \\
 {\bf Discriminative}: Model conditional $p(y|x)$.
 
-\newpage
 \subsection{Decision Trees}
 Given a set of points and classes $\{x_i,y_i\}_{i=1}^n$, test features $x_j$ and branch on the feature which ``best'' separates the data. In new space (space without features $x_j$) repeat the process and continue splitting data until good classification accuracy is reached.
 {\bf Heurisitics}:
