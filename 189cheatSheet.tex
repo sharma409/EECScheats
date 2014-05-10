@@ -212,7 +212,8 @@ Solutions: 1) Get more data to fill all of that empty space. 2) Get better featu
 Minkowski: $Dis_p(x,y)=(\sum_{i=1}^d|x_i-y_u|^p)^{\frac{1}{p}}=||x-y||_p$\\
 0-norm: $Dis_0(x,y)=\sum_{i=1}^d I|x_i=y_i|$\\
 Mahalanobis: $Dis_M(x,y|\Sigma)=\sqrt{(x-y)^T\Sigma^{-1}(x-y)}$\\
-In high-d we get "Hubs" s.t most points identify the hubs as their NN. These hubs are usually near the means (Ex: dull gray images, sky and clouds). To avoid having everything classified as these hubs, we can use cosine similarity.
+In high-d we get "Hubs" s.t most points identify the hubs as their NN. These hubs are usually near the means (Ex: dull gray images, sky and clouds). To avoid having everything classified as these hubs, we can use cosine similarity.\\
+In general trust short distances over long distances! (This applies to anything that uses distance metrtics, Nearest Neighbor AND all clustering algorithms.)
 \subsection*{Gradients}
 \(\frac{\partial \bf{y}}{\partial \bf{x}}\triangleq
     \begin{bmatrix}
@@ -221,8 +222,8 @@ In high-d we get "Hubs" s.t most points identify the hubs as their NN. These hub
     \frac{\partial y_1}{\partial x_n} & \dots & \frac{\partial y_m}{\partial x_n}
     \end{bmatrix},
 \)
-\(\frac{\partial (Ax)}{\partial x}=A, \frac{\partial (x^TA)}{\partial x}=A^T,\)\\
-\( \frac{\partial (x^Tx)}{\partial x}=2x, \frac{\partial (x^TAx)}{\partial x}=(A+A^T)x, \frac{\partial (trBA)}{\partial x}=B^T\)
+\(\frac{\partial (A{\bf x})}{\partial {\bf x}}=A^T, \frac{\partial ({\bf x}^TA)}{\partial {\bf x}}=A,\)\\
+\( \frac{\partial ({\bf x}^T{\bf x})}{\partial {\bf x}}=2{\bf x}, \frac{\partial ({\bf x}^TA{\bf x})}{\partial {\bf x}}=(A+A^T){\bf x}, \frac{\partial (trBA)}{\partial A}=B^T\)
 
 \newpage
 \subsection{Decision Trees}
