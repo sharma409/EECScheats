@@ -3,3 +3,5 @@
 *.log
 *.out
 *.pdf
+*.fdb_latexmk
+*.DS_Store

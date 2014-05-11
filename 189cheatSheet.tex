@@ -217,7 +217,7 @@ How do deal with this curse:\\
 Minkowski: $Dis_p(x,y)=(\sum_{i=1}^d|x_i-y_u|^p)^{\frac{1}{p}}=||x-y||_p$\\
 0-norm: $Dis_0(x,y)=\sum_{i=1}^d I|x_i=y_i|$\\
 Mahalanobis: $Dis_M(x,y|\Sigma)=\sqrt{(x-y)^T\Sigma^{-1}(x-y)}$\\
-In high-d we get "Hubs" s.t most points identify the hubs as their NN. These hubs are usually near the means (Ex: dull gray images, sky and clouds). To avoid having everything classified as these hubs, we can use cosine similarity.\\
+In high-d we get ``Hubs" s.t most points identify the hubs as their NN. These hubs are usually near the means (Ex: dull gray images, sky and clouds). To avoid having everything classified as these hubs, we can use cosine similarity.\\
 {\bf K-d trees} increase the efficiency of nearest neighbor lookup.
 
 %Locality Sensitive Hashing
@@ -256,13 +256,7 @@ Weak Learner: Can classify with at least 50\% accuracy.\\
 Train weak learner to get a weak classifier. Test it on the training data, up-weigh misclassified data, down-weigh correctly classified data. Train a new weak learner on the weighted data. Repeat. A new point is classified by every weak learner and the output class is the sign of a weighted avg. of weak learner outputs. Boosting generally overfits. If there is label noise, boosting keeps upweighing the mislabeled data.\\
 {\bf AdaBoost} is a boosting algorithm. The weak learner weights are given by $\alpha_t=\frac{1}{2}\ln(\frac{1-\epsilon_t}{\epsilon_t})$ where $\epsilon_t=Pr_{D_t}(h_t(x_i)\ne y_i)$ (probability of misclassification). The weights are updated $D_{t+1}(i)=\frac{D_t(i)exp(-\alpha_ty_ih_t(x_i))}{Z_t}$ where $Z_t$ is a normalization factor.
 
-\subsection{K means}
-
-Partition your data into a predetermined number of groups k.
-Randomly pick points to initialize the centers of the k clusters.
-Calculate the center (mean) of each of the k centroids.
-Re-assign objects to closest centroids.
-Stop when no re-assignments occur.
+\newpage
 
 \subsection{Neural Networks}
 Neural Nets explore what you can do by combining perceptrons, each of which is a simple linear classifier. We use a soft threshold for each activation function $\theta$ because it is twice differentiable.
@@ -270,6 +264,7 @@ Neural Nets explore what you can do by combining perceptrons, each of which is a
 {\bf Activation Functions:}
 \[\theta(s) = \operatorname{tanh}(s) = \frac{e^s-e^{-s}}{e^s+e^{-s}} \implies \theta'(s) = 1 - \theta^2(s)\]
 \[\theta(s) = \sigma(s) \implies \theta'(s) = \sigma(s)(1-\sigma(s))\]
+{\bf Error Function}:\\
 {\bf Notation:}
 
 $w_{ij}^{(l)}$ is the weight from neuron $i$ in layer $l-1$ to neuron $j$ in layer $l$.
@@ -279,18 +274,8 @@ $w_{ij}^{(l)}$ is the weight from neuron $i$ in layer $l-1$ to neuron $j$ in lay
 \item $l \in \{1,\ldots,L\}$ (there are L layers), $i \in \{1,\ldots,d^{(l-1)}\}, j \in \{1,\ldots,d^{(l)}\}$ (there are $d^{(l-1)}$ nodes in the previous layer that are fully connected to the $d^{(l)}$ nodes in the current layer)
 \item \(s_j^{(l)} = \sum_{i=1}^{d^{(l-1})} w_{ij}^{(l)} x_i^{(l-1)}\) is the input signal for neuron $j$ at layer $l$ and is a weighted combination of the output signals $x_i^{(l-1)}$ of neurons previous layer.
 \item \(x_j^{(l)} = \theta(s_j^{(l)})\) is the output of a neuron which is the activation function applied to the input signal.
+\item $e(w)$ is the error as a function of the weights
 \end{enumerate}
-\underline{The goal is to find the weights $w_{ij}^{(l)}$}
-
-\textbf{Back-propagation:} We want to compute gradient descent on a neural network in an efficient manner.
-Start with the highest node and calculate:
-$ \delta^L_1 = \frac{\partial e(w)}{\partial s_i^L}
-$
-Then we recursively calculate down:
-$ \delta^{(l-1)}_i = \frac{\partial e(w)}{\partial s_i^{(l-1)}}
-= \sum_j \delta^{(l)}_j \cdot w_{ij}^{(l)} \cdot \theta'(s_i^{(l-1)})
-$.
-Then this allows us to compute the gradient quickly over the entire network.
 
 
 \subsection{Clustering}
@@ -299,11 +284,47 @@ Then this allows us to compute the gradient quickly over the entire network.
 2) Division: Start with 1 cluster and recursively divide one of the existing clusters into two daughter clusters.\\
 3) Partitioning: Partition data into K non-overlapping clusters, iteratively reallocate data between the clusters until some loss is minimized.
 
-\newpage
+\underline{The goal is to find the weights $w_{ij}^{(l)}$}. Use stock gradient descent.
+\[\nabla e(w) \rightarrow \frac{\partial e(w)}{\partial w_{ij}^{(l)}} = \frac{\partial e(w)}{\partial s_{j}^{(l)}} \frac{\partial s_{j}^{(l)}}{\partial w_{ij}^{(l)}} = \delta_j^{(l)}x_i^{(l-1)}\]
+{\bf Computing $\delta_j^{(l)}$}:\\
+Final Layer: \(\delta_1^{(L)} = \frac{\partial e(w)}{\partial s_{j}^{(l)}} = \frac{\partial e(w)}{\partial \theta(s_1^{(L)})} \frac{\partial \theta(s_1^{(L)})}{\partial s_{1}^{(L)}} = e'(x_1^{(L)}) \theta'(s_1^{L})\) \\
+General: \begin{eqnarray*} \delta_i^{(l-1)} = \frac{\partial e(w)}{\partial s_{j}^{(l-1)}} &=& \sum_{i=1}^{d^{(l)}} \frac{\partial e(w)}{\partial s_{j}^{(l)}} \times \frac{\partial s_{j}^{(l)}}{\partial x_i^{(l-1)}} \times \frac{\partial x_i^{(l-1)}}{\partial s_i^{(l-1)}} \\
+&=&  \sum_{i=1}^{d^{(l)}} \delta_j^{(l)} \times w_{ij}^{(l)} \times \theta'(s_i^{(l-1)}) \end{eqnarray*}
+\includegraphics[scale=0.28]{NN1.pdf}
 
+\subsection{Clustering}
+Unsupervised Learning (no labels). Two main types:
+\begin{itemize}
+	\item {\bf Hierarchical}:
+	\begin{itemize}
+		\item Agglomerative: Start with n points, merge 2 closest clusters using some measure, such as: Single-link (closest pair), Complete-link (furthest pair), Average-link (average of all pairs), Centroid (centroid distance).
+		\item Divisive: Start with single cluster, recursively divide clusters. Less popular
+	\end{itemize}
+	\item {\bf Partitioning}: Partition the data into a K mutually exclusive exhaustive groups (i.e. encode k=C(i)). Iteratively reallocate to minimize loss function, like $W(C)=\frac{1}{2} \sum_{k=1}^K \sum_{C(i)=k} \sum_{C(i')=k} d(x_i, x_i')$. 
+	\\We can't minimize over the entire loss function so just do greedy iterative descent. This ends up being {\bf K-means}: Choose clusters at random, calculate centroid of each cluster, reallocate objects to nearest centroid, repeat. Finds local minimum of W(C), not global.
+\end{itemize}
+{\bf Vector Quantization}: Use representative prototype vectors to simplify representations of signals. Use clustering to find prototype vectors.
+\\{\bf Parametric Discriminative Clustering (Mixture Models)}: Assume PDF is made up of multiple gaussians with different centers. Then use EM to compute this model. 
+\\E Step: $P(\mu_i | x_k) = \frac{P(\mu_i) P(x_k | mu_i)}{\sum_j P(\mu_j) P(x_j|mu_j)}$
+\\M Step: $P(c_i) = \frac{1}{n_e} \sum_{k=1}^{n_e} P(\mu_i | x_k)$. Now update mu and sigma:\\$\mu_i = \frac{\sum_k x_k P(\mu_i|x_k)}{\sum_k P(\mu_i | x_k)}$
+	\\$\sigma_i^2=\frac{\sum_k (x_k-\mu_i)^2 P(\mu_i|x_k)}{\sum_k P(\mu_i | x_k)}$.
+\\{\bf Nonparametric Discriminative Clustering}: Histogram, Kernel Density Estimation. 
+\\Kernel: $P(x) = \frac{1}{n} \sum K(x-x_i)$, s.t. K is normalized, symmetric, and $\lim_{||x|| \rightarrow \infty} ||x||^d K(x) = 0$.
+
+\subsection{K means}
+
+Partition your data into a predetermined number of groups k.
+Randomly pick points to initialize the centers of the k clusters.
+Calculate the center (mean) of each of the k centroids.
+Re-assign objects to closest centroids.
+Stop when no re-assignments occur.
+
+
+\newpage
 
 % You can even have references
 \rule{0.3\linewidth}{0.25pt}
+\newpage
 \scriptsize
 \bibliographystyle{abstract}
 \bibliography{refFile}
