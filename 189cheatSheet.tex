@@ -255,22 +255,30 @@ For \underline{regression}, minimize the variance. Same optimiation problem as a
 Weak Learner: Can classify with at least 50\% accuracy.\\
 Train weak learner to get a weak classifier. Test it on the training data, up-weigh misclassified data, down-weigh correctly classified data. Train a new weak learner on the weighted data. Repeat. A new point is classified by every weak learner and the output class is the sign of a weighted avg. of weak learner outputs. Boosting generally overfits. If there is label noise, boosting keeps upweighing the mislabeled data.\\
 {\bf AdaBoost} is a boosting algorithm. The weak learner weights are given by $\alpha_t=\frac{1}{2}\ln(\frac{1-\epsilon_t}{\epsilon_t})$ where $\epsilon_t=Pr_{D_t}(h_t(x_i)\ne y_i)$ (probability of misclassification). The weights are updated $D_{t+1}(i)=\frac{D_t(i)exp(-\alpha_ty_ih_t(x_i))}{Z_t}$ where $Z_t$ is a normalization factor.
-
-
+\newpage
 \subsection{Neural Networks}
 Neural Nets explore what you can do by combining perceptrons, each of which is a simple linear classifier. We use a soft threshold for each activation function $\theta$ because it is twice differentiable.
 \includegraphics[scale=0.31]{NN.pdf} \ \includegraphics[scale=0.2]{NN2.pdf}
 {\bf Activation Functions:}
 \[\theta(s) = \operatorname{tanh}(s) = \frac{e^s-e^{-s}}{e^s+e^{-s}} \implies \theta'(s) = 1 - \theta^2(s)\]
 \[\theta(s) = \sigma(s) \implies \theta'(s) = \sigma(s)(1-\sigma(s))\]
+{\bf Error Function}:
+\(e(w) = \)
 {\bf Notation:}
 \begin{enumerate}
 \item $w_{ij}^{(l)}$ is the weight from neuron $i$ in layer $l-1$ to neuron $j$ in layer $l$
 \item $l \in \{1,\ldots,L\}$ (there are L layers), $i \in \{1,\ldots,d^{(l-1)}\}, j \in \{1,\ldots,d^{(l)}\}$ (there are $d^{(l-1)}$ nodes in the previous layer that are fully connected to the $d^{(l)}$ nodes in the current layer)
 \item \(s_j^{(l)} = \sum_{i=1}^{d^{(l-1})} w_{ij}^{(l)} x_i^{(l-1)}\) is the input signal for neuron $j$ at layer $l$ and is a weighted combination of the output signals $x_i^{(l-1)}$ of neurons previous layer.
 \item \(x_j^{(l)} = \theta(s_j^{(l)})\) is the output of a neuron which is the activation function applied to the input signal.
+\item $e(w)$ is the error as a function of the weights
 \end{enumerate}
-\underline{The goal is to find the weights $w_{ij}^{(l)}$}
+\underline{The goal is to find the weights $w_{ij}^{(l)}$}. Use stock gradient descent.
+\[\nabla e(w) \rightarrow \frac{\partial e(w)}{\partial w_{ij}^{(l)}} = \frac{\partial e(w)}{\partial s_{j}^{(l)}} \frac{\partial s_{j}^{(l)}}{\partial w_{ij}^{(l)}} = \delta_j^{(l)}x_i^{(l-1)}\]
+{\bf Computing $\delta_j^{(l)}$}:\\
+Final Layer: \(\delta_1^{(L)} = \frac{\partial e(w)}{\partial s_{j}^{(l)}} = \frac{\partial e(w)}{\partial \theta(s_1^{(L)})} \frac{\partial \theta(s_1^{(L)})}{\partial s_{1}^{(L)}} = e'(x_1^{(L)}) \theta'(s_1^{L})\) \\
+General: \begin{eqnarray*} \delta_i^{(l-1)} = \frac{\partial e(w)}{\partial s_{j}^{(l-1)}} &=& \sum_{i=1}^{d^{(l)}} \frac{\partial e(w)}{\partial s_{j}^{(l)}} \times \frac{\partial s_{j}^{(l)}}{\partial x_i^{(l-1)}} \times \frac{\partial x_i^{(l-1)}}{\partial s_i^{(l-1)}} \\
+&=&  \sum_{i=1}^{d^{(l)}} \delta_j^{(l)} \times w_{ij}^{(l)} \times \theta'(s_i^{(l-1)}) \end{eqnarray*}
+\includegraphics[scale=0.28]{NN1.pdf}
 
 
 \subsection{Clustering}
