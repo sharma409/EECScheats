@@ -8,6 +8,7 @@
 \usepackage{color,graphicx,overpic}
 \usepackage{wrapfig}
 \usepackage{hyperref}
+\usepackage[shortlabels]{enumitem}
 
 
 \pdfinfo{
@@ -138,7 +139,7 @@ L2 Reg: $\min_x ||Ax-y||_2^2 + \lambda||x||_2^2 \implies x^*=(A^TA+\lambda I)^{-
 The above variant is used when A contains a null space. L2 Reg falls out of the MLE when we add a Gaussian prior on x with $\Sigma=cI$. We get L1 Reg when x has a Laplace prior.
 %1l-sparcity, regularization prevents overfitting.
 
-\subsection*{Logistic Regresion}
+\subsection*{Logistic Regression}
 Classify $y \in \{0,1\} \implies$Model $p(y=1|x) = \frac{1}{1+e^{-\theta^T x}}= h_\theta(x)$\\
 $\frac{dh_\theta}{d\theta} = (\frac{1}{1 + e^{\theta^Tx}})^2 e^{-\theta^Tx} = \frac{1}{1 + e^{\theta^Tx}}\left(1-\frac{1}{1+e^{-\theta^Tx}}\right) = h_\theta(1-h_\theta)$
 \(p(y|x;\theta) = (h_\theta(x))^y(1-h_\theta(x))^{1-y} \implies\)
@@ -147,7 +148,9 @@ $\frac{dh_\theta}{d\theta} = (\frac{1}{1 + e^{\theta^Tx}})^2 e^{-\theta^Tx} = \f
 \(\nabla_\theta l = \sum_i (y^{(i)} - h_\theta(x^{(i)}))x^{(i)} = X^\intercal (y-h_\theta(X))\),  (want $\max \ l(\theta)$)
 Stoch: $\boxed{\theta_{t+1} = \theta_t + \alpha(y^{(j)}_t - h_\theta(x^{(j)}_t))x^{(j)}_t}$\\
 Batch: $\boxed{\theta_{t+1} = \theta_t + \alpha X^\intercal(y-h_\theta(X))}$
-%Gaussians with equal variance go to logistic, so do poisson and other 
+%Gaussians with equal variance go to logistic, so do poisson and other
+%Model log odds as a linear function of input, log(p/(1-p))=B^T x where p=P(y=1|x)
+%Neural Net, output layer only, 1 node, sigmoidal with cross entropy loss = logistic regression
 %MLE of variance for guassian is biased (mean is unbiased)
 
 \subsection*{Multivariate Gaussian $X \sim \mathcal{N}(\mu,\Sigma)$}
@@ -238,7 +241,7 @@ In high-d we get ``Hubs" s.t most points identify the hubs as their NN. These hu
 {\bf Discriminative}: Model conditional $p(y|x)$.
 
 \subsection{Decision Trees}
-Given a set of points and classes $\{x_i,y_i\}_{i=1}^n$, test features $x_j$ and branch on the feature which ``best'' separates the data. Recursively split on the new subset of data. Growing the tree to max depth tends to overfit (training data gets cut quickly $\implies$ subtrees train on small sets), mistakes high up in the tree propagate to corresponding subtrees. To reduce overfitting, we can prune using a validation set, and we can limit the depth.\\
+Given a set of points and classes $\{x_i,y_i\}_{i=1}^n$, test features $x_j$ and branch on the feature which ``best'' separates the data. Recursively split on the new subset of data. Growing the tree to max depth tends to overfit (training data gets cut quickly $\implies$ subtrees train on small sets). Mistakes high up in the tree propagate to corresponding subtrees. To reduce overfitting, we can prune using a validation set, and we can limit the depth.\\
 DT's are prone to label noise. Building the correct tree is hard.\\
 {\bf Heurisitic}: For \underline{classification}, maximize information gain \[ \max_j \ \ \operatorname{H}(D) \ - \sum_{x_j \in X_j} P(X_j = x_j) \cdot \operatorname{H}(D | X_j = x_j) \]
 where $\operatorname{H}(D) = -\sum_{c \in C} P(y = c) \log[p(y = c)] $ is the entropy of the data set, $C$ is the set of classes each data point can take, and $P(y=c)$ is the fraction of data points with class $c$.\\
@@ -255,7 +258,6 @@ For \underline{regression}, minimize the variance. Same optimiation problem as a
 Weak Learner: Can classify with at least 50\% accuracy.\\
 Train weak learner to get a weak classifier. Test it on the training data, up-weigh misclassified data, down-weigh correctly classified data. Train a new weak learner on the weighted data. Repeat. A new point is classified by every weak learner and the output class is the sign of a weighted avg. of weak learner outputs. Boosting generally overfits. If there is label noise, boosting keeps upweighing the mislabeled data.\\
 {\bf AdaBoost} is a boosting algorithm. The weak learner weights are given by $\alpha_t=\frac{1}{2}\ln(\frac{1-\epsilon_t}{\epsilon_t})$ where $\epsilon_t=Pr_{D_t}(h_t(x_i)\ne y_i)$ (probability of misclassification). The weights are updated $D_{t+1}(i)=\frac{D_t(i)exp(-\alpha_ty_ih_t(x_i))}{Z_t}$ where $Z_t$ is a normalization factor.
-<<<<<<< HEAD
 
 \subsection{Clustering}
 Unsupervised Learning (no labels). Two main types:
@@ -277,7 +279,7 @@ Unsupervised Learning (no labels). Two main types:
 \\Kernel: $P(x) = \frac{1}{n} \sum K(x-x_i)$, s.t. K is normalized, symmetric, and $\lim_{||x|| \rightarrow \infty} ||x||^d K(x) = 0$.
 
 \subsection{Mode Seeking}
-To find ''Bumps" in the distribution. Mean Shift: calculate
+To find ``Bumps" in the distribution. Mean Shift: calculate
 \[m(x)=\left[ \frac{\sum_{i=1}^n x_i g(\frac{||x-x_i||^2}{h})}{\sum_{i=1}^n g(\frac{||x-x_i||^2}{h})} - x \right] \].
 Then translate kernel window by m(x). To deal with saddle points, perturb modes and prune.
 
@@ -286,25 +288,32 @@ Then translate kernel window by m(x). To deal with saddle points, perturb modes 
 \subsection{Neural Networks}
 Neural Nets explore what you can do by combining perceptrons, each of which is a simple linear classifier. We use a soft threshold for each activation function $\theta$ because it is twice differentiable.
 \includegraphics[scale=0.31]{NN.pdf} \ \includegraphics[scale=0.2]{NN2.pdf}
-{\bf Activation Functions:}
-\[\theta(s) = \operatorname{tanh}(s) = \frac{e^s-e^{-s}}{e^s+e^{-s}} \implies \theta'(s) = 1 - \theta^2(s)\]
-\[\theta(s) = \sigma(s) \implies \theta'(s) = \sigma(s)(1-\sigma(s))\]
-{\bf Error Function}:\\
+{\bf Activation Functions:}\\[4pt]
+\ \ \ \(\theta(s) = \operatorname{tanh}(s) = \frac{e^s-e^{-s}}{e^s+e^{-s}} \implies \theta'(s) = 1 - \theta^2(s)\)\\[4pt]
+\ \ \ \(\theta(s) = \sigma(s) = \frac{1}{1+e^{-s}} \implies \theta'(s) = \sigma(s)(1-\sigma(s))\)\\[4pt]
+{\bf Error Functions}:\\
+\ \ \(\text{Cross Entropy Loss} \sum_{i=1}^{n_{out}} y \log(h_\theta(x)) + (1-y)\log(1-h_\theta(x))\)\\[5pt]
+\ \ \(\text{Mean Squared Error} \sum_{i=1}^{n_{out}} (y-h_\theta(x))^2\)\\[5pt]
 {\bf Notation:}
-\begin{enumerate}
-\item $w_{ij}^{(l)}$ is the weight from neuron $i$ in layer $l-1$ to neuron $j$ in layer $l$
-\item $L$ layers. $d^{(l)}$ nodes in the $l^{\text{th}}$ layer
-\item \(x_j^{(l)} = \theta(s_j^{(l)})\) is the output of a neuron which is the activation function applied to the input signal.
+\begin{enumerate}[topsep=0pt, partopsep=0pt]
+  \setlength{\itemsep}{1pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+\item $w_{ij}^{(l)}$ is the weight from neuron $i$ in layer $l-1$ to neuron $j$ in layer $l$. There are $d^{(l)}$ nodes in the $l^{\text{th}}$ layer.
+\item $L$ layers, where L is output layer and data is 0'th layer.
+\item \(x_j^{(l)} = \theta(s_j^{(l)})\) is the output of a neuron. It's the activation function applied to the input signal. \(s_j^{(l)}=\sum_i w_{ij}^{(l)}x_i^{(l-1)}\)
 \item $e(w)$ is the error as a function of the weights
 \end{enumerate}
-\underline{The goal is to find the weights $w_{ij}^{(l)}$}. Use stock gradient descent.
+\underline{The goal is to learn the weights $w_{ij}^{(l)}$}. We use gradient descent, but error function is non-convex so we tend to local minima. The naive version takes $O(w^2)$. \underline{Back propagation}, an algorithm for efficient computation of the gradient, takes $O(w)$.\\
 \[\nabla e(w) \rightarrow \frac{\partial e(w)}{\partial w_{ij}^{(l)}} = \frac{\partial e(w)}{\partial s_{j}^{(l)}} \frac{\partial s_{j}^{(l)}}{\partial w_{ij}^{(l)}} = \delta_j^{(l)}x_i^{(l-1)}\]
-{\bf Computing $\delta_j^{(l)}$}:\\
-Final Layer: \(\delta_1^{(L)} = \frac{\partial e(w)}{\partial s_{j}^{(l)}} = \frac{\partial e(w)}{\partial \theta(s_1^{(L)})} \frac{\partial \theta(s_1^{(L)})}{\partial s_{1}^{(L)}} = e'(x_1^{(L)}) \theta'(s_1^{L})\) \\
-General: \begin{eqnarray*} \delta_i^{(l-1)} = \frac{\partial e(w)}{\partial s_{j}^{(l-1)}} &=& \sum_{i=1}^{d^{(l)}} \frac{\partial e(w)}{\partial s_{j}^{(l)}} \times \frac{\partial s_{j}^{(l)}}{\partial x_i^{(l-1)}} \times \frac{\partial x_i^{(l-1)}}{\partial s_i^{(l-1)}} \\
-&=&  \sum_{i=1}^{d^{(l)}} \delta_j^{(l)} \times w_{ij}^{(l)} \times \theta'(s_i^{(l-1)}) \end{eqnarray*}
+Final Layer: \(\delta_j^{(L)} = \frac{\partial e(w)}{\partial s_{j}^{(l)}} = \frac{\partial e(w)}{\partial x_j^{(L)}} \frac{\partial x_j^{(L)}}{\partial s_j^{(L)}} = e'(x_j^{(L)}) \theta_{out}'(s_j^{L})\) \\
+\begin{eqnarray*} \text{General: } \delta_i^{(l-1)} = \frac{\partial e(w)}{\partial s_{i}^{(l-1)}} &=& \sum_{j=1}^{d^{(l)}} \frac{\partial e(w)}{\partial s_{j}^{(l)}} \times \frac{\partial s_{j}^{(l)}}{\partial x_i^{(l-1)}} \times \frac{\partial x_i^{(l-1)}}{\partial s_i^{(l-1)}} \\
+&=&  \sum_{j=1}^{d^{(l)}} \delta_j^{(l)} \times w_{ij}^{(l)} \times \theta'(s_i^{(l-1)}) \end{eqnarray*}
 \includegraphics[scale=0.28]{NN1.pdf}
 
+%$W^{(l)} = W^{(l)} - \eta x^{(l-1)}(\delta^{(l)})^T$\\
+%$b^{(l)} = b^{(l)} + \eta\delta^{(l)}$
+%add vectorized delta for output layer and hidden layer
 
 % You can even have references
 \rule{0.3\linewidth}{0.25pt}
