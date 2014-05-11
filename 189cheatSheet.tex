@@ -255,7 +255,8 @@ For \underline{regression}, minimize the variance. Same optimiation problem as a
 Weak Learner: Can classify with at least 50\% accuracy.\\
 Train weak learner to get a weak classifier. Test it on the training data, up-weigh misclassified data, down-weigh correctly classified data. Train a new weak learner on the weighted data. Repeat. A new point is classified by every weak learner and the output class is the sign of a weighted avg. of weak learner outputs. Boosting generally overfits. If there is label noise, boosting keeps upweighing the mislabeled data.\\
 {\bf AdaBoost} is a boosting algorithm. The weak learner weights are given by $\alpha_t=\frac{1}{2}\ln(\frac{1-\epsilon_t}{\epsilon_t})$ where $\epsilon_t=Pr_{D_t}(h_t(x_i)\ne y_i)$ (probability of misclassification). The weights are updated $D_{t+1}(i)=\frac{D_t(i)exp(-\alpha_ty_ih_t(x_i))}{Z_t}$ where $Z_t$ is a normalization factor.
-\newpage
+\vfill
+\columnbreak
 \subsection{Neural Networks}
 Neural Nets explore what you can do by combining perceptrons, each of which is a simple linear classifier. We use a soft threshold for each activation function $\theta$ because it is twice differentiable.
 \includegraphics[scale=0.31]{NN.pdf} \ \includegraphics[scale=0.2]{NN2.pdf}
@@ -297,6 +298,12 @@ Unsupervised Learning (no labels). Two main types:
 	\\$\sigma_i^2=\frac{\sum_k (x_k-\mu_i)^2 P(\mu_i|x_k)}{\sum_k P(\mu_i | x_k)}$.
 \\{\bf Nonparametric Discriminative Clustering}: Histogram, Kernel Density Estimation. 
 \\Kernel: $P(x) = \frac{1}{n} \sum K(x-x_i)$, s.t. K is normalized, symmetric, and $\lim_{||x|| \rightarrow \infty} ||x||^d K(x) = 0$.
+
+\subsection{Mode Seeking}
+To find ''Bumps" in the distribution. Mean Shift: calculate
+\[m(x)=\left[ \frac{\sum_{i=1}^n x_i g(\frac{||x-x_i||^2}{h})}{\sum_{i=1}^n g(\frac{||x-x_i||^2}{h})} - x \right] \].
+Then translate kernel window by m(x). To deal with saddle points, perturb modes and prune.
+
 
 % You can even have references
 \rule{0.3\linewidth}{0.25pt}
