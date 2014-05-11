@@ -255,7 +255,9 @@ For \underline{regression}, minimize the variance. Same optimiation problem as a
 Weak Learner: Can classify with at least 50\% accuracy.\\
 Train weak learner to get a weak classifier. Test it on the training data, up-weigh misclassified data, down-weigh correctly classified data. Train a new weak learner on the weighted data. Repeat. A new point is classified by every weak learner and the output class is the sign of a weighted avg. of weak learner outputs. Boosting generally overfits. If there is label noise, boosting keeps upweighing the mislabeled data.\\
 {\bf AdaBoost} is a boosting algorithm. The weak learner weights are given by $\alpha_t=\frac{1}{2}\ln(\frac{1-\epsilon_t}{\epsilon_t})$ where $\epsilon_t=Pr_{D_t}(h_t(x_i)\ne y_i)$ (probability of misclassification). The weights are updated $D_{t+1}(i)=\frac{D_t(i)exp(-\alpha_ty_ih_t(x_i))}{Z_t}$ where $Z_t$ is a normalization factor.
+
 \newpage
+
 \subsection{Neural Networks}
 Neural Nets explore what you can do by combining perceptrons, each of which is a simple linear classifier. We use a soft threshold for each activation function $\theta$ because it is twice differentiable.
 \includegraphics[scale=0.31]{NN.pdf} \ \includegraphics[scale=0.2]{NN2.pdf}
@@ -264,6 +266,9 @@ Neural Nets explore what you can do by combining perceptrons, each of which is a
 \[\theta(s) = \sigma(s) \implies \theta'(s) = \sigma(s)(1-\sigma(s))\]
 {\bf Error Function}:\\
 {\bf Notation:}
+
+$w_{ij}^{(l)}$ is the weight from neuron $i$ in layer $l-1$ to neuron $j$ in layer $l$.
+
 \begin{enumerate}
 \item $w_{ij}^{(l)}$ is the weight from neuron $i$ in layer $l-1$ to neuron $j$ in layer $l$
 \item $l \in \{1,\ldots,L\}$ (there are L layers), $i \in \{1,\ldots,d^{(l-1)}\}, j \in \{1,\ldots,d^{(l)}\}$ (there are $d^{(l-1)}$ nodes in the previous layer that are fully connected to the $d^{(l)}$ nodes in the current layer)
@@ -271,6 +276,14 @@ Neural Nets explore what you can do by combining perceptrons, each of which is a
 \item \(x_j^{(l)} = \theta(s_j^{(l)})\) is the output of a neuron which is the activation function applied to the input signal.
 \item $e(w)$ is the error as a function of the weights
 \end{enumerate}
+
+
+\subsection{Clustering}
+
+1) Agglomerative: Start with n clusters and recursively merge the two closest clusters.\\
+2) Division: Start with 1 cluster and recursively divide one of the existing clusters into two daughter clusters.\\
+3) Partitioning: Partition data into K non-overlapping clusters, iteratively reallocate data between the clusters until some loss is minimized.
+
 \underline{The goal is to find the weights $w_{ij}^{(l)}$}. Use stock gradient descent.
 \[\nabla e(w) \rightarrow \frac{\partial e(w)}{\partial w_{ij}^{(l)}} = \frac{\partial e(w)}{\partial s_{j}^{(l)}} \frac{\partial s_{j}^{(l)}}{\partial w_{ij}^{(l)}} = \delta_j^{(l)}x_i^{(l-1)}\]
 {\bf Computing $\delta_j^{(l)}$}:\\
@@ -297,6 +310,17 @@ Unsupervised Learning (no labels). Two main types:
 	\\$\sigma_i^2=\frac{\sum_k (x_k-\mu_i)^2 P(\mu_i|x_k)}{\sum_k P(\mu_i | x_k)}$.
 \\{\bf Nonparametric Discriminative Clustering}: Histogram, Kernel Density Estimation. 
 \\Kernel: $P(x) = \frac{1}{n} \sum K(x-x_i)$, s.t. K is normalized, symmetric, and $\lim_{||x|| \rightarrow \infty} ||x||^d K(x) = 0$.
+
+\subsection{K means}
+
+Partition your data into a predetermined number of groups k.
+Randomly pick points to initialize the centers of the k clusters.
+Calculate the center (mean) of each of the k centroids.
+Re-assign objects to closest centroids.
+Stop when no re-assignments occur.
+
+
+\newpage
 
 % You can even have references
 \rule{0.3\linewidth}{0.25pt}
