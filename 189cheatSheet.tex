@@ -6,6 +6,7 @@
 \usepackage[landscape]{geometry}
 \usepackage{amsmath,amsthm,amsfonts,amssymb}
 \usepackage{color,graphicx,overpic}
+\usepackage{wrapfig}
 \usepackage{hyperref}
 
 
@@ -237,34 +238,39 @@ In high-d we get "Hubs" s.t most points identify the hubs as their NN. These hub
 {\bf Discriminative}: Model conditional $p(y|x)$.
 
 \subsection{Decision Trees}
-Given a set of points and classes $\{x_i,y_i\}_{i=1}^n$, test features $x_j$ and branch on the feature which ``best'' separates the data. In new space (space without features $x_j$) repeat the process and continue splitting data until good classification accuracy is reached.
-{\bf Heurisitics}:
-\begin{enumerate}
+Given a set of points and classes $\{x_i,y_i\}_{i=1}^n$, test features $x_j$ and branch on the feature which ``best'' separates the data. Repeat on split data until good classification is reached.\\
 
-\item Maximize Information Gain: \(\max_j \ \operatorname{infogain}(D|X_j)\) \[ \max_j \ \ \operatorname{H}(D) \ - \sum_{x_j \in X_j} P(X_j = x_j) \cdot \operatorname{H}(D | X_j = x_j) \]
+{\bf Splitting Heurisitic}:\\
+Maximize Information Gain: \(\max_j \ \operatorname{infogain}(D|X_j)\) \[ \max_j \ \ \operatorname{H}(D) \ - \sum_{x_j \in X_j} P(X_j = x_j) \cdot \operatorname{H}(D | X_j = x_j) \]
 where $\operatorname{H}(D) = -\sum_{c \in C} P(y = c) \log(p(y = c)) $ is the entropy of the data set, $C$ is the set of classes each data point can take, and $P(y=c)$ is the fraction of data points with class $c$.
 
-\item Minimize Gini Impurity
+%Gini impurity?
 
-\item Minimize Misclassification Impurity
+% Minimize Misclassification Impurity:
 
-\end{enumerate}
-
-{\bf Optimal Split}:
+{\bf Regression}: Minimize variance
 
 \subsection{Random Forests}
 {\bf Problem}: Decision trees are \underline{unstable}: small changes in the input data have large effect on tree structure $\implies$ decision trees are high-variance estimators.\\
 {\bf Solution}: Random Forests train $M$ different trees with randomly sampled subsets of the data (and sometimes with randomly sampled subsets of the features to decorrelate the trees). A new point is tested on all $M$ trees and we take the majority as our output class (for regression we take the average of the output).
 
+\subsection{Boosting}
 
 \subsection{Neural Networks}
 Neural Nets explore what you can do by combining perceptrons, each of which is a simple linear classifier. We use a soft threshold for each activation function $\theta$ because it is twice differentiable.
-\includegraphics[scale=0.4]{NN.pdf}
+\includegraphics[scale=0.31]{NN.pdf} \ \includegraphics[scale=0.2]{NN2.pdf}
 {\bf Activation Functions:}
 \[\theta(s) = \operatorname{tanh}(s) = \frac{e^s-e^{-s}}{e^s+e^{-s}} \implies \theta'(s) = 1 - \theta^2(s)\]
 \[\theta(s) = \sigma(s) \implies \theta'(s) = \sigma(s)(1-\sigma(s))\]
 {\bf Notation:}
-$w_{ij}^{(l)}$ is the weight from neuron $i$ in layer $l-1$ to neuron $j$ in layer $l$.
+\begin{enumerate}
+\item $w_{ij}^{(l)}$ is the weight from neuron $i$ in layer $l-1$ to neuron $j$ in layer $l$
+\item $l \in \{1,\ldots,L\}$ (there are L layers), $i \in \{1,\ldots,d^{(l-1)}\}, j \in \{1,\ldots,d^{(l)}\}$ (there are $d^{(l-1)}$ nodes in the previous layer that are fully connected to the $d^{(l)}$ nodes in the current layer)
+\item \(s_j^{(l)} = \sum_{i=1}^{d^{(l-1})} w_{ij}^{(l)} x_i^{(l-1)}\) is the input signal for neuron $j$ at layer $l$ and is a weighted combination of the output signals $x_i^{(l-1)}$ of neurons previous layer.
+\item \(x_j^{(l)} = \theta(s_j^{(l)})\) is the output of a neuron which is the activation function applied to the input signal.
+\end{enumerate}
+\underline{The goal is to find the weights $w_{ij}^{(l)}$}
+
 \newpage
 
 
