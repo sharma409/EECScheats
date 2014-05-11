@@ -238,19 +238,8 @@ In high-d we get "Hubs" s.t most points identify the hubs as their NN. These hub
 {\bf Discriminative}: Model conditional $p(y|x)$.
 
 \subsection{Decision Trees}
-Given a set of points and classes $\{x_i,y_i\}_{i=1}^n$, test features $x_j$ and branch on the feature which ``best'' separates the data. Repeat on split data until good classification is reached.\\
-
-{\bf Splitting Heurisitic}:\\
-Maximize Information Gain: \(\max_j \ \operatorname{infogain}(D|X_j)\) \[ \max_j \ \ \operatorname{H}(D) \ - \sum_{x_j \in X_j} P(X_j = x_j) \cdot \operatorname{H}(D | X_j = x_j) \]
-where $\operatorname{H}(D) = -\sum_{c \in C} P(y = c) \log(p(y = c)) $ is the entropy of the data set, $C$ is the set of classes each data point can take, and $P(y=c)$ is the fraction of data points with class $c$.
-
-%Gini impurity?
-
-% Minimize Misclassification Impurity:
-
-{\bf Regression}: Minimize variance
 Given a set of points and classes $\{x_i,y_i\}_{i=1}^n$, test features $x_j$ and branch on the feature which ``best'' separates the data. Recursively split on the new subset of data. Growing the tree to max depth tends to overfit (training data gets cut quickly $\implies$ subtrees train on small sets), mistakes high up in the tree propagate to corresponding subtrees. To reduce overfitting, we can prune using a validation set, and we can limit the depth.\\
-DT's a prone to label noise. Building the correct tree is NP hard.\\
+DT's are prone to label noise. Building the correct tree is hard.\\
 {\bf Heurisitic}: For \underline{classification}, maximize information gain \[ \max_j \ \ \operatorname{H}(D) \ - \sum_{x_j \in X_j} P(X_j = x_j) \cdot \operatorname{H}(D | X_j = x_j) \]
 where $\operatorname{H}(D) = -\sum_{c \in C} P(y = c) \log[p(y = c)] $ is the entropy of the data set, $C$ is the set of classes each data point can take, and $P(y=c)$ is the fraction of data points with class $c$.\\
 For \underline{regression}, minimize the variance. Same optimiation problem as above, except H is replaced with var. Pure leaves correspond to low variance, and the result is the mean of the current leaf. 
