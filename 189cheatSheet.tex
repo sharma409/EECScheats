@@ -217,7 +217,7 @@ How do deal with this curse:\\
 Minkowski: $Dis_p(x,y)=(\sum_{i=1}^d|x_i-y_u|^p)^{\frac{1}{p}}=||x-y||_p$\\
 0-norm: $Dis_0(x,y)=\sum_{i=1}^d I|x_i=y_i|$\\
 Mahalanobis: $Dis_M(x,y|\Sigma)=\sqrt{(x-y)^T\Sigma^{-1}(x-y)}$\\
-In high-d we get "Hubs" s.t most points identify the hubs as their NN. These hubs are usually near the means (Ex: dull gray images, sky and clouds). To avoid having everything classified as these hubs, we can use cosine similarity.\\
+In high-d we get ``Hubs" s.t most points identify the hubs as their NN. These hubs are usually near the means (Ex: dull gray images, sky and clouds). To avoid having everything classified as these hubs, we can use cosine similarity.\\
 {\bf K-d trees} increase the efficiency of nearest neighbor lookup.
 
 %Locality Sensitive Hashing
@@ -280,17 +280,28 @@ General: \begin{eqnarray*} \delta_i^{(l-1)} = \frac{\partial e(w)}{\partial s_{j
 &=&  \sum_{i=1}^{d^{(l)}} \delta_j^{(l)} \times w_{ij}^{(l)} \times \theta'(s_i^{(l-1)}) \end{eqnarray*}
 \includegraphics[scale=0.28]{NN1.pdf}
 
-
 \subsection{Clustering}
-
-1) Agglomerative: Start with n clusters and recursively merge the two closest clusters.\\
-2) Division: Start with 1 cluster and recursively divide one of the existing clusters into two daughter clusters.\\
-3) Partitioning: Partition data into K non-overlapping clusters, iteratively reallocate data between the clusters until some loss is minimized.
-\newpage
-
+Unsupervised Learning (no labels). Two main types:
+\begin{itemize}
+	\item {\bf Hierarchical}:
+	\begin{itemize}
+		\item Agglomerative: Start with n points, merge 2 closest clusters using some measure, such as: Single-link (closest pair), Complete-link (furthest pair), Average-link (average of all pairs), Centroid (centroid distance).
+		\item Divisive: Start with single cluster, recursively divide clusters. Less popular
+	\end{itemize}
+	\item {\bf Partitioning}: Partition the data into a K mutually exclusive exhaustive groups (i.e. encode k=C(i)). Iteratively reallocate to minimize loss function, like $W(C)=\frac{1}{2} \sum_{k=1}^K \sum_{C(i)=k} \sum_{C(i')=k} d(x_i, x_i')$. 
+	\\We can't minimize over the entire loss function so just do greedy iterative descent. This ends up being {\bf K-means}: Choose clusters at random, calculate centroid of each cluster, reallocate objects to nearest centroid, repeat. Finds local minimum of W(C), not global.
+\end{itemize}
+{\bf Vector Quantization}: Use representative prototype vectors to simplify representations of signals. Use clustering to find prototype vectors.
+\\{\bf Parametric Discriminative Clustering (Mixture Models)}: Assume PDF is made up of multiple gaussians with different centers. Then use EM to compute this model. 
+\\E Step: $P(\mu_i | x_k) = \frac{P(\mu_i) P(x_k | mu_i)}{\sum_j P(\mu_j) P(x_j|mu_j)}$
+\\M Step: $P(c_i) = \frac{1}{n_e} \sum_{k=1}^{n_e} P(\mu_i | x_k)$. Now update mu and sigma:\\$\mu_i = \frac{\sum_k x_k P(\mu_i|x_k)}{\sum_k P(\mu_i | x_k)}$
+	\\$\sigma_i^2=\frac{\sum_k (x_k-\mu_i)^2 P(\mu_i|x_k)}{\sum_k P(\mu_i | x_k)}$.
+\\{\bf Nonparametric Discriminative Clustering}: Histogram, Kernel Density Estimation. 
+\\Kernel: $P(x) = \frac{1}{n} \sum K(x-x_i)$, s.t. K is normalized, symmetric, and $\lim_{||x|| \rightarrow \infty} ||x||^d K(x) = 0$.
 
 % You can even have references
 \rule{0.3\linewidth}{0.25pt}
+\newpage
 \scriptsize
 \bibliographystyle{abstract}
 \bibliography{refFile}
