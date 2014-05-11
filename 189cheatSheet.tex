@@ -6,6 +6,7 @@
 \usepackage[landscape]{geometry}
 \usepackage{amsmath,amsthm,amsfonts,amssymb}
 \usepackage{color,graphicx,overpic}
+\usepackage{wrapfig}
 \usepackage{hyperref}
 
 
@@ -209,17 +210,17 @@ Key Idea: Store all training examples $<x_i,f(x_i)>$\\
 $\epsilon^*=\text{error of optimal prediction},\ \epsilon_{nn}=\text{error of 1NN classifier}$\\
 KNN \ $lim_{N\to\infty,K\to\infty}, \frac{K}{N}\to 0, \epsilon_{knn}=\epsilon^*$\\
 {\bf Curse of dimentionality}: As the number of dimensions increases, everything becomes farther appart. Our low dimension intuition falls apart. Consider the Hypersphere/Hypercube ratio, it's close to zero at d=10.
-Solutions: 
-\begin{enumerate}
-\item Get more data to fill all of that empty space
-\item Get better features, reducing the dimentionality and packing the data closer together. Ex: Bag-of-words, Histograms,...
-\item Use a better distance metric.
-\end{enumerate}
+How do deal with this curse:\\
+\ \ 1. Get more data to fill all of that empty space\\
+\ \ 2. Get better features, reducing the dimentionality and packing the data closer together. Ex: Bag-of-words, Histograms,...\\
+\ \ 3. Use a better distance metric.\\
 Minkowski: $Dis_p(x,y)=(\sum_{i=1}^d|x_i-y_u|^p)^{\frac{1}{p}}=||x-y||_p$\\
 0-norm: $Dis_0(x,y)=\sum_{i=1}^d I|x_i=y_i|$\\
 Mahalanobis: $Dis_M(x,y|\Sigma)=\sqrt{(x-y)^T\Sigma^{-1}(x-y)}$\\
 In high-d we get "Hubs" s.t most points identify the hubs as their NN. These hubs are usually near the means (Ex: dull gray images, sky and clouds). To avoid having everything classified as these hubs, we can use cosine similarity.\\
 {\bf K-d trees} increase the efficiency of nearest neighbor lookup.
+
+%Locality Sensitive Hashing
 
 \subsection*{Gradients}
 \(\frac{\partial \bf{y}}{\partial \bf{x}}\triangleq
@@ -237,24 +238,23 @@ In high-d we get "Hubs" s.t most points identify the hubs as their NN. These hub
 {\bf Discriminative}: Model conditional $p(y|x)$.
 
 \subsection{Decision Trees}
-Given a set of points and classes $\{x_i,y_i\}_{i=1}^n$, test features $x_j$ and branch on the feature which ``best'' separates the data. In new space (space without features $x_j$) repeat the process and continue splitting data until good classification accuracy is reached.
-{\bf Heurisitics}:
-\begin{enumerate}
+Given a set of points and classes $\{x_i,y_i\}_{i=1}^n$, test features $x_j$ and branch on the feature which ``best'' separates the data. Recursively split on the new subset of data. Growing the tree to max depth tends to overfit (training data gets cut quickly $\implies$ subtrees train on small sets), mistakes high up in the tree propagate to corresponding subtrees. To reduce overfitting, we can prune using a validation set, and we can limit the depth.\\
+DT's are prone to label noise. Building the correct tree is hard.\\
+{\bf Heurisitic}: For \underline{classification}, maximize information gain \[ \max_j \ \ \operatorname{H}(D) \ - \sum_{x_j \in X_j} P(X_j = x_j) \cdot \operatorname{H}(D | X_j = x_j) \]
+where $\operatorname{H}(D) = -\sum_{c \in C} P(y = c) \log[p(y = c)] $ is the entropy of the data set, $C$ is the set of classes each data point can take, and $P(y=c)$ is the fraction of data points with class $c$.\\
+For \underline{regression}, minimize the variance. Same optimiation problem as above, except H is replaced with var. Pure leaves correspond to low variance, and the result is the mean of the current leaf. 
 
-\item Maximize Information Gain: \(\max_j \ \operatorname{infogain}(D|X_j)\) \[ \max_j \ \ \operatorname{H}(D) \ - \sum_{x_j \in X_j} P(X_j = x_j) \cdot \operatorname{H}(D | X_j = x_j) \]
-where $\operatorname{H}(D) = -\sum_{c \in C} P(y = c) \log(p(y = c)) $ is the entropy of the data set, $C$ is the set of classes each data point can take, and $P(y=c)$ is the fraction of data points with class $c$.
-
-\item Minimize Gini Impurity
-
-\item Minimize Misclassification Impurity
-
-\end{enumerate}
-
-{\bf Optimal Split}:
+%Gini Impurity
+%Misclassification Impurity
 
 \subsection{Random Forests}
-{\bf Problem}: Decision trees are \underline{unstable}: small changes in the input data have large effect on tree structure $\implies$ decision trees are high-variance estimators.\\
-{\bf Solution}: Random Forests train $M$ different trees with randomly sampled subsets of the data (and sometimes with randomly sampled subsets of the features to decorrelate the trees). A new point is tested on all $M$ trees and we take the majority as our output class (for regression we take the average of the output).
+{\bf Problem}: DT's are \underline{unstable}: small changes in the input data have large effect on tree structure $\implies$ DT's are high-variance estimators.\\
+{\bf Solution}: Random Forests train $M$ different trees with randomly sampled subsets of the data (called bagging), and sometimes with randomly sampled subsets of the features to decorrelate the trees. A new point is tested on all $M$ trees and we take the majority as our output class (for regression we take the average of the output).
+
+\subsection{Boosting}
+Weak Learner: Can classify with at least 50\% accuracy.\\
+Train weak learner to get a weak classifier. Test it on the training data, up-weigh misclassified data, down-weigh correctly classified data. Train a new weak learner on the weighted data. Repeat. A new point is classified by every weak learner and the output class is the sign of a weighted avg. of weak learner outputs. Boosting generally overfits. If there is label noise, boosting keeps upweighing the mislabeled data.\\
+{\bf AdaBoost} is a boosting algorithm. The weak learner weights are given by $\alpha_t=\frac{1}{2}\ln(\frac{1-\epsilon_t}{\epsilon_t})$ where $\epsilon_t=Pr_{D_t}(h_t(x_i)\ne y_i)$ (probability of misclassification). The weights are updated $D_{t+1}(i)=\frac{D_t(i)exp(-\alpha_ty_ih_t(x_i))}{Z_t}$ where $Z_t$ is a normalization factor.
 
 \subsection{K means}
 
@@ -266,12 +266,21 @@ Stop when no re-assignments occur.
 
 \subsection{Neural Networks}
 Neural Nets explore what you can do by combining perceptrons, each of which is a simple linear classifier. We use a soft threshold for each activation function $\theta$ because it is twice differentiable.
-\includegraphics[scale=0.4]{NN.pdf}
+\includegraphics[scale=0.31]{NN.pdf} \ \includegraphics[scale=0.2]{NN2.pdf}
 {\bf Activation Functions:}
 \[\theta(s) = \operatorname{tanh}(s) = \frac{e^s-e^{-s}}{e^s+e^{-s}} \implies \theta'(s) = 1 - \theta^2(s)\]
 \[\theta(s) = \sigma(s) \implies \theta'(s) = \sigma(s)(1-\sigma(s))\]
 {\bf Notation:}
+
 $w_{ij}^{(l)}$ is the weight from neuron $i$ in layer $l-1$ to neuron $j$ in layer $l$.
+
+\begin{enumerate}
+\item $w_{ij}^{(l)}$ is the weight from neuron $i$ in layer $l-1$ to neuron $j$ in layer $l$
+\item $l \in \{1,\ldots,L\}$ (there are L layers), $i \in \{1,\ldots,d^{(l-1)}\}, j \in \{1,\ldots,d^{(l)}\}$ (there are $d^{(l-1)}$ nodes in the previous layer that are fully connected to the $d^{(l)}$ nodes in the current layer)
+\item \(s_j^{(l)} = \sum_{i=1}^{d^{(l-1})} w_{ij}^{(l)} x_i^{(l-1)}\) is the input signal for neuron $j$ at layer $l$ and is a weighted combination of the output signals $x_i^{(l-1)}$ of neurons previous layer.
+\item \(x_j^{(l)} = \theta(s_j^{(l)})\) is the output of a neuron which is the activation function applied to the input signal.
+\end{enumerate}
+\underline{The goal is to find the weights $w_{ij}^{(l)}$}
 
 \textbf{Back-propagation:} We want to compute gradient descent on a neural network in an efficient manner.
 Start with the highest node and calculate:
@@ -282,6 +291,14 @@ $ \delta^{(l-1)}_i = \frac{\partial e(w)}{\partial s_i^{(l-1)}}
 = \sum_j \delta^{(l)}_j \cdot w_{ij}^{(l)} \cdot \theta'(s_i^{(l-1)})
 $.
 Then this allows us to compute the gradient quickly over the entire network.
+
+
+\subsection{Clustering}
+
+1) Agglomerative: Start with n clusters and recursively merge the two closest clusters.\\
+2) Division: Start with 1 cluster and recursively divide one of the existing clusters into two daughter clusters.\\
+3) Partitioning: Partition data into K non-overlapping clusters, iteratively reallocate data between the clusters until some loss is minimized.
+
 \newpage
 
 
