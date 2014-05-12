@@ -260,28 +260,66 @@ Train weak learner to get a weak classifier. Test it on the training data, up-we
 {\bf AdaBoost} is a boosting algorithm. The weak learner weights are given by $\alpha_t=\frac{1}{2}\ln(\frac{1-\epsilon_t}{\epsilon_t})$ where $\epsilon_t=Pr_{D_t}(h_t(x_i)\ne y_i)$ (probability of misclassification). The weights are updated $D_{t+1}(i)=\frac{D_t(i)exp(-\alpha_ty_ih_t(x_i))}{Z_t}$ where $Z_t$ is a normalization factor.
 
 \subsection{Clustering}
-Unsupervised Learning (no labels). Two main types:
-\begin{itemize}
-	\item {\bf Hierarchical}:
-	\begin{itemize}
-		\item Agglomerative: Start with n points, merge 2 closest clusters using some measure, such as: Single-link (closest pair), Complete-link (furthest pair), Average-link (average of all pairs), Centroid (centroid distance).
-		\item Divisive: Start with single cluster, recursively divide clusters. Less popular
-	\end{itemize}
-	\item {\bf Partitioning}: Partition the data into a K mutually exclusive exhaustive groups (i.e. encode k=C(i)). Iteratively reallocate to minimize loss function, like $W(C)=\frac{1}{2} \sum_{k=1}^K \sum_{C(i)=k} \sum_{C(i')=k} d(x_i, x_i')$. 
-	\\We can't minimize over the entire loss function so just do greedy iterative descent. This ends up being {\bf K-means}: Choose clusters at random, calculate centroid of each cluster, reallocate objects to nearest centroid, repeat. Finds local minimum of W(C), not global.
-\end{itemize}
-{\bf Vector Quantization}: Use representative prototype vectors to simplify representations of signals. Use clustering to find prototype vectors.
-\\{\bf Parametric Discriminative Clustering (Mixture Models)}: Assume PDF is made up of multiple gaussians with different centers. Then use EM to compute this model. 
-\\E Step: $P(\mu_i | x_k) = \frac{P(\mu_i) P(x_k | mu_i)}{\sum_j P(\mu_j) P(x_j|mu_j)}$
-\\M Step: $P(c_i) = \frac{1}{n_e} \sum_{k=1}^{n_e} P(\mu_i | x_k)$. Now update mu and sigma:\\$\mu_i = \frac{\sum_k x_k P(\mu_i|x_k)}{\sum_k P(\mu_i | x_k)}$
+Unsupervised Learning (no labels).\\
+    {\bf Hierarchical}:
+    \begin{itemize}[topsep=0pt, partopsep=0pt]
+        \setlength{\itemsep}{1pt}
+        \setlength{\parskip}{0pt}
+        \setlength{\parsep}{0pt}
+        \item \underline{Agglomerative}: Start with n points, merge 2 closest clusters using some measure, such as: Single-link (closest pair), Complete-link (furthest pair), Average-link (average of all pairs), Centroid (centroid distance).\\
+        Note: SL and CL are sensitive to outliers.
+        %All heuristics give different hierarchies
+        \item \underline{Divisive}: Start with single cluster, recursively divide clusters into 2 subclusters.
+    \end{itemize}
+    {\bf Partitioning}: Partition the data into a K mutually exclusive exhaustive groups (i.e. encode k=C(i)). Iteratively reallocate to minimize some loss function. Finding the correct partitions is hard.
+    Use a greedy algorithm called K-means (coordinate decent). Loss function is non-convex thus we find local minima.\\
+    {\bf K-means}: Choose clusters at random, calculate centroid of each cluster, reallocate objects to nearest centroid, repeat.\\
+    %K-means works well if: Clusters are spherical, Clusters are well separated, Clusters are of similar volumes, Clusters have similar number of points
+    {\bf K-means}++: Initialize clusters one by one. D(x) = distance of point x to nearest cluster. Pr(x is new cluster center)$\propto D(x)^2$\\
+    {\bf K-medians}: Works with arbitrary distance/dissimilarty metric, the centers $\mu_k$ are represented by data points. Is more restrictive thus has higher loss.\\
+    {\bf General Loss}: $\sum_{n=1}^N\sum_{k=1}^Kd(x_n, \mu_k)r_{nk}$ where $r_{nk}=1$ if $x_n$ is in cluser k, and 0 o.w.
+
+%Online k-means: 1) classify the point, 2) slightly nudge the center in the direction of the point.
+
+\subsection{Vector Quantization}
+Use clustering to find representative prototype vectors, which are used to simplify representations of signals.
+
+\subsection{Parametric Density Estimation}
+(Mixture Models). Assume PDF is made up of multiple gaussians with different centers. $P(x)=\sum_{i=1}^{n_c}P(c_i)P(x|c_i)$ with objective function as log likelihood of data. Use EM to estimate this model. 
+\\E Step: $P(\mu_i | x_k) = \frac{P(\mu_i) P(x_k | \mu_i)}{\sum_j P(\mu_j) P(x_j|\mu_j)}$
+\\M Step: $P(c_i) = \frac{1}{n_e} \sum_{k=1}^{n_e} P(\mu_i | x_k)$
+\\$\mu_i = \frac{\sum_k x_k P(\mu_i|x_k)}{\sum_k P(\mu_i | x_k)}$
 	\\$\sigma_i^2=\frac{\sum_k (x_k-\mu_i)^2 P(\mu_i|x_k)}{\sum_k P(\mu_i | x_k)}$.
-\\{\bf Nonparametric Discriminative Clustering}: Histogram, Kernel Density Estimation. 
-\\Kernel: $P(x) = \frac{1}{n} \sum K(x-x_i)$, s.t. K is normalized, symmetric, and $\lim_{||x|| \rightarrow \infty} ||x||^d K(x) = 0$.
+\subsection{Non-parametric Density Estimation}
+Can use Histogram or Kernel Density Estimation (KDE).\\
+KDE: $P(x) = \frac{1}{n} \sum K({\bf x}-{\bf x_i})$ is a function of the data.\\
+The kernel K has the following properties:\\
+Symmetric, Normalized $\int_{\mathbb{R}^d}K(x)dx=1$, and $\lim_{||x|| \rightarrow \infty} ||x||^d K(x) = 0$.\\
+The \underline{bandwidth} is the width of the kernel function. Too small = jagged results, too large = smoothed out results.
 
 \subsection{Mode Seeking}
-To find ``Bumps" in the distribution. Mean Shift: calculate
-\[m(x)=\left[ \frac{\sum_{i=1}^n x_i g(\frac{||x-x_i||^2}{h})}{\sum_{i=1}^n g(\frac{||x-x_i||^2}{h})} - x \right] \].
-Then translate kernel window by m(x). To deal with saddle points, perturb modes and prune.
+To find ``Bumps" in the distribution, we can just estimate the gradient.\\
+%Taking the derivative of the KDE
+Mean Shift: Translate kernel window by m(x).\\
+\[m(x)=\left[ \frac{\sum_{i=1}^n x_i g(\frac{||x-x_i||^2}{h})}{\sum_{i=1}^n g(\frac{||x-x_i||^2}{h})} - x \right] \]
+Where g is a constant Kernel with radius R (Can use any Kernel for generalized results).\\
+To deal with saddle points, perturb modes and prune by taking the highest mode.\\
+\underline{Pro's}:
+\begin{itemize}[topsep=0pt, partopsep=0pt]
+    \setlength{\itemsep}{1pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \item Auto convergence speed, near maxima the steps are small.
+    \item Only one parameter to choose (window size).
+    \item Does not assume prior shape on data.
+\end{itemize}
+\underline{Con's}:
+\begin{itemize}[topsep=0pt, partopsep=0pt]
+    \setlength{\itemsep}{1pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \item The window size is non-trivial, and incorrect window size can cause modes to be merged (or can cause additional ``shallow" modes to be generated)
+\end{itemize}
 
 \vfill
 \columnbreak
@@ -296,9 +334,9 @@ Neural Nets explore what you can do by combining perceptrons, each of which is a
 \ \ \(\text{Mean Squared Error} \sum_{i=1}^{n_{out}} (y-h_\theta(x))^2\)\\[5pt]
 {\bf Notation:}
 \begin{enumerate}[topsep=0pt, partopsep=0pt]
-  \setlength{\itemsep}{1pt}
-  \setlength{\parskip}{0pt}
-  \setlength{\parsep}{0pt}
+\setlength{\itemsep}{1pt}
+\setlength{\parskip}{0pt}
+\setlength{\parsep}{0pt}
 \item $w_{ij}^{(l)}$ is the weight from neuron $i$ in layer $l-1$ to neuron $j$ in layer $l$. There are $d^{(l)}$ nodes in the $l^{\text{th}}$ layer.
 \item $L$ layers, where L is output layer and data is 0'th layer.
 \item \(x_j^{(l)} = \theta(s_j^{(l)})\) is the output of a neuron. It's the activation function applied to the input signal. \(s_j^{(l)}=\sum_i w_{ij}^{(l)}x_i^{(l-1)}\)
@@ -314,6 +352,10 @@ Final Layer: \(\delta_j^{(L)} = \frac{\partial e(w)}{\partial s_{j}^{(l)}} = \fr
 %$W^{(l)} = W^{(l)} - \eta x^{(l-1)}(\delta^{(l)})^T$\\
 %$b^{(l)} = b^{(l)} + \eta\delta^{(l)}$
 %add vectorized delta for output layer and hidden layer
+%$\delta^{(l-1)}=W^{(l)}\delta^{(l)}\odot\theta'(s^{(l-1)})$
+%$\delta^{(L)}=e(x^{(L)})\odot\theta'(s^{(L)})$
+
+%PCA, SVD
 
 % You can even have references
 \rule{0.3\linewidth}{0.25pt}
