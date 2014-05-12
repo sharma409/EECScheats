@@ -165,35 +165,37 @@ Batch: $\boxed{\theta_{t+1} = \theta_t + \alpha X^\intercal(y-h_\theta(X))}$
 The distribution is the result of a linear transformation of a vector of univariate Gaussians $Z \sim \mathcal{N}(0,I)$ such that $X = AZ + \mu$ where we have $\Sigma = AA^\intercal$. From the pdf, we see that the level curves of the distribution decrease proportionally with $x^\intercal\Sigma^{-1}x$ (assume $\mu = 0$) $\implies$ \[\text{$c$-level set of $f$} \propto \{x:x^\intercal\Sigma^{-1}x = c\}\]
 \[x^\intercal\Sigma^{-1} = c \equiv x^\intercal U\Lambda^{-1}U^\intercal x = c \implies\]
 \[\underbrace{\lambda_1^{-1}(u_1^\intercal x)^2}_\text{axis length: $\sqrt{\lambda_1}$} + \cdots +\underbrace{\lambda_n^{-1}(u_n^\intercal x)^2}_\text{axis length: $\sqrt{\lambda_n}$} = c\]\\
-Thus we have that the level curves form an ellipsoid with axis lengths equal to the square root of the eigenvalues of the covariance matrix.
+Thus the level curves form an ellipsoid with axis lengths equal to the square root of the eigenvalues of the covariance matrix.
 
 \subsection*{LDA and QDA}
 Classify $y\in\{0,1\},$ Model $p(y)=\phi^y\phi^{1-y}$ and $p(x|y=1;\mu_1)=\frac{1}{(2\pi)^{n/2}|\Sigma|^{1/2}}exp\left(-\frac{1}{2}(x-\mu_1)^T \Sigma^{-1}(x-\mu_1)\right)$\\
 $l(\theta,\mu_0,\mu_1,\Sigma)=log\ \Pi_{i=1}^m p(x^{(i)}|y^{(i)};\mu_0,\mu_1,\Sigma)p(y^{(i)};\Phi)$
 gives us $\phi_{MLE}=\frac{1}{m}\sum_{i=1}^m 1\{y^{(i)}=1\}, \mu_{k_{MLE}}=$avg of $x^{(i)}$ classified as k,
-$\Sigma_{MLE} =\frac{1}{m}\sum_{i=1}^m(x^{(i)}-\mu_{y_{(i)}})(x^{(i)}-\mu_{y_{(i)}})^T$. Notice the covariance matrix is the same for all classes in LDA.\\
-If $p(x|y)$ multivariate gaussian (w/ shared $\Sigma)$, then $p(y|x)$ is logisitic function. The converse is NOT true. LDA makes stronger assumptions about data than does logistric regression.
+$\Sigma_{MLE} =\frac{1}{m}\sum_{i=1}^m(x^{(i)}-\mu_{y_{(i)}})(x^{(i)}-\mu_{y_{(i)}})^T$.\\
+Notice the covariance matrix is the same for all classes in LDA.\\
+If $p(x|y)$ multivariate gaussian (w/ shared $\Sigma)$, then $p(y|x)$ is logistic function. The converse is NOT true. LDA makes stronger assumptions about data than does logistic regression.
 $h(x)=arg\max_{k}-\frac{1}{2}(x-\mu_k)^T \Sigma^{-1}(x-\mu_k)+log(\pi_k)$ \\where $\pi_k=p(y=k)$\\
 \rule{1\linewidth}{0.1pt}\\
 For QDA, the model is the same as LDA except that each class has a unique covariance matrix. 
 $h(x)=arg\max_{k}-\frac{1}{2}log|\Sigma_k|-\frac{1}{2}(x-\mu_k)^T \Sigma_k^{-1}(x-\mu_k)+log(\pi_k)$
 
 \subsection*{Optimization}
-Newtons Method: $\theta_{t+1}=\theta_t-[\nabla_\theta^2f(\theta_t)]^{-1}\nabla_\theta f(\theta_t)$\\
+Newton's Method: $\theta_{t+1}=\theta_t-[\nabla_\theta^2f(\theta_t)]^{-1}\nabla_\theta f(\theta_t)$\\
 Gradient Decent: $\theta_{t+1}=\theta_t-\alpha\nabla_\theta f(\theta_t)$, for minimizing\\
 Lagrange Multipliers:\\
-Given,\ \ $\min_x f(x)\ s.t.\ g_i(x)=0,\ h_i(x)\le0$\ \ the corresponding Lagrangian is: $L(x,\alpha)=f(x)+\sum_{i=1}^k\alpha_ig_i(x)+\sum_{i=1}^l\beta_ih_i(x)$\\
+Given\ \ $\min_x f(x)\ s.t.\ g_i(x)=0,\ h_i(x)\le0$\ \ the corresponding Lagrangian is: $L(x,\alpha,\beta)=f(x)+\sum_{i=1}^k\alpha_ig_i(x)+\sum_{i=1}^l\beta_ih_i(x)$\\
 We min over x and max over the Lagrange multipliers $\alpha$ and $\beta$
 
 \subsection*{Support Vector Machines}
-In the strictly separable case, the goal is to find a seperating hyperplane (like logistic regression) except now we don't just want any hyperplane, but one with the largest margin. \\
+In the strictly separable case, the goal is to find a separating hyperplane (like logistic regression) except now we don't just want any hyperplane, but one with the largest margin. \\
 $H=\{\omega^Tx+b=0\}$, since scaling $\omega$ and b in opposite directions doesn't change the hyperplane our optimization function should have scaling invariance built into it. Thus, we do it now and define the closest points to the hyperplane $x_{sv}$ (support vectors) to satisfy: $|\omega^Tx_{sv}+b|=1$. The distance from any support vector to the hyper plane is now: $\frac{1}{||\omega||_2}$. Maximizing the distance to the hyperplane is the same as minimizing $||\omega||_2$.\\
 The final optimization problem is: $\boxed{\min_{\omega,b} \frac{1}{2}||\omega||_2\ s.t.\ y^{(i)}(w^Tx^{(i)}+b)\ge1, i=1,\dots,m}$\\
 Primal: $L_p(\omega,b,\alpha)=\frac{1}{2}||\omega||_2-\sum_{i=1}^m\alpha_i(y^{(i)}(w^Tx^{(i)}+b)-1)$\\
 $\frac{\partial L_p}{\partial\omega}=\omega-\sum \alpha_iy^{(i)}x^{(i)}=0 \implies \omega=\sum \alpha_iy^{(i)}x^{(i)}$\\
 $\frac{\partial L_p}{\partial b}=-\sum \alpha_iy^{(i)}=0, \text{\ \ \ Note: }\alpha_i\ne 0$ only for support vectors.\\
 Substitute the derivatives into the primal to get the dual.\\
-Dual: $L_d(\alpha)=\sum_{i=1}^m\alpha_i-\frac{1}{2}\sum_{i=1}^m\sum_{j=1}^my^{(i)}y^{(j)}\alpha_i\alpha_j(x^{(i)})^Tx^{(j)}$
+Dual: $L_d(\alpha)=\sum_{i=1}^m\alpha_i-\frac{1}{2}\sum_{i=1}^m\sum_{j=1}^my^{(i)}y^{(j)}\alpha_i\alpha_j(x^{(i)})^Tx^{(j)}$\\
+KKT says $\alpha_n (y_n (w^T x_n + b) - 1) = 0$ where $\alpha_n > 0$.
 \rule{1\linewidth}{0.1pt}\\
 In the non-separable case we allow points to cross the marginal boundary by some amount $\xi$ and penalize it.\\
 $\boxed{\min_{\omega,b} \frac{1}{2}||\omega||_2+C\sum_{i=1}^m\xi_i\ \ s.t.\ \ y^{(i)}(w^Tx^{(i)}+b)\ge1-\xi_i}$\\
@@ -239,7 +241,7 @@ In high-d we get ``Hubs" s.t most points identify the hubs as their NN. These hu
 \subsection*{Generative vs. Discriminative Model}
 {\bf Generative}: Model class conditional density $p(x|y)$ and find $p(y|x) \propto p(x|y)p(y)$ or model joint density $p(x,y)$ and marginalize to find $p(y=k|x) = \int_x p(x,y=k)dx$ \\
 {\bf Discriminative}: Model conditional $p(y|x)$.
-
+\newpage
 \subsection{Decision Trees}
 Given a set of points and classes $\{x_i,y_i\}_{i=1}^n$, test features $x_j$ and branch on the feature which ``best'' separates the data. Recursively split on the new subset of data. Growing the tree to max depth tends to overfit (training data gets cut quickly $\implies$ subtrees train on small sets). Mistakes high up in the tree propagate to corresponding subtrees. To reduce overfitting, we can prune using a validation set, and we can limit the depth.\\
 DT's are prone to label noise. Building the correct tree is hard.\\
